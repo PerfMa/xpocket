@@ -7,6 +7,9 @@
     <artifactId>xpocket-plugin-spi</artifactId>
     <packaging>jar</packaging>
     <version>2.0.0-RELEASE</version>
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>XPocket Plugin SPI Definition</description>
+    <url>https://github.com/PerfMa/xpocket</url>
     
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>

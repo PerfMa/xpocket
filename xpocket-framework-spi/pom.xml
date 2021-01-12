@@ -7,6 +7,9 @@
     <artifactId>xpocket-framework-spi</artifactId>
     <packaging>jar</packaging>
     <version>2.0.0-RELEASE</version>
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>XPocket Framework SPI Definition</description>
+    <url>https://github.com/PerfMa/xpocket</url>
 
     <licenses>
         <license>
