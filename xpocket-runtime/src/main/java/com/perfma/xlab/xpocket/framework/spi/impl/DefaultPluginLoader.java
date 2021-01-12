@@ -48,6 +48,10 @@ public class DefaultPluginLoader implements PluginLoader {
                 }
             });
 
+            if(plugins == null || plugins.length == 0) {
+                return true;
+            }
+
             HashSet<String> nameUniIndex = new HashSet<>();
             for (File plugin : plugins) {
                 XPocketPluginClassLoader pluginLoader
