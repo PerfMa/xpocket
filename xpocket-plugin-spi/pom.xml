@@ -14,6 +14,28 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>    
     
+    <licenses>
+        <license>
+            <name>Apache License</name>
+            <url>https://github.com/PerfMa/xpocket/blob/main/LICENSE</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>TONG YIN</name>
+            <email>tongyin.ty@perfma.com</email>
+            <organization>PerfMa</organization>
+            <organizationUrl>http://www.perfma.com</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/PerfMa/xpocket.git</connection>
+        <developerConnection>scm:git:ssh://github.com:PerfMa/xpocket.git</developerConnection>
+        <url>https://github.com/PerfMa/xpocket</url>
+    </scm>
+
     <build>
         <plugins>
             <plugin>
