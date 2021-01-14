@@ -22,7 +22,7 @@
 
 ### 一 快速开始
 
-### 1.下载模拟程序，解压并运行
+### 1.下载模拟程序，然后解压并运行
 ```bash
 wget https://a.perfma.net/xpocket/download/XPocket-demo.tar.gz
 tar -xvf  XPocket-demo.tar.gz
@@ -30,11 +30,11 @@ cd simulator
 sh run.sh
 ```
 
-### 2.下载xpocket，然后解压并运行
+### 2.下载xpocket，然后解压并运行（注：如果您当前的jdk版本大于jdk8，请使用xpocket_jdk9+.sh）
 ```bash
 wget https://a.perfma.net/xpocket/download/XPocket.tar.gz
 tar -xvf  XPocket.tar.gz
-sh xpocket/start.sh
+sh xpocket/xpocket_jdk8.sh
 ```
 启动成功后如下所示
 ![plugins](resourse/start.png)
@@ -75,6 +75,7 @@ XPocket退出插件的方式很简单，只需要使用命令 `cd` 即可，cd�
 - XPocketPlugin （主要负责处理插件生命周期相关的工作，非必要）
 - XPocketCommand （封装了命令实现，必要）
 - xpocket.def (配置文件，必要)
+- 插件开发的包依赖：com.perfma.xlab:xpocket-plugin-spi:[2.0.0-RELEASE](https://search.maven.org/search?q=a:xpocket-plugin-spi)
 
 #### 1.XPocketPlugin
 ```
@@ -120,7 +121,7 @@ public interface XPocketPlugin {
 - switchOff：退出插件时会调用
 - printLogo：插件自定义logo的打印
 
-XPocket也提供了一个空实现 AbstractXPocketPlugin，用户使用的时候可以继承AbstractXPocketPlugin并自己实现相关逻辑，如果插件不需要进行相关的工作，那么xpocketPlugin并非是必要的。
+XPocket也提供了一个空实现 AbstractXPocketPlugin，用户使用的时候可以继承AbstractXPocketPlugin并自己实现相关逻辑，如果插件不需要进行相关的工作，那么XPocketPlugin并非是必要的。
 
 #### 2.XPocketCommand
 ```
@@ -271,14 +272,14 @@ public class DemoCommand extends AbstractSystemCommand {
 - main-implementation    : 插件规则实现类（非必要）
 - plugin-description     : 插件的描述（非必要）
 - usage-tips             : tips（非必要）
-- github                 : github地址（必要）
+- github                 : github地址（非必要）
 - plugin-author          : 原工程作者（非必要）
 - plugin-project         : 原工程项目名（非必要）
 - plugin-version         : 原工程版本（非必要）
 - tools-author           : 插件作者（非必要）
 - tool-project           : 插件项目名（非必要）
 - tool-version           : 插件版本（非必要）
-- plugin-command-package : 插件主要可用命令所在的包（必要）
+- plugin-command-package : 插件主要可用命令所在的包（非必要）
 
 ##### Demo
 ```
@@ -304,28 +305,24 @@ main-implementation=com.perfma.xlab.xpocket.arthas.plugin.ArthasPlugin
 - 将打包好的插件的jar包放在xpocket/plugins目录下
 - 重新启动xpocket
 
-#### 5.提示
-插件开发的包依赖：com.perfma.xlab:xpocket-plugin-spi:2.0.0-RELEASE  
-框架扩展开发的包依赖: com.perfma.xlab:xpocket-framework-spi:2.0.0-RELEASE
-
 #### 6. 现有插件
 #### arthas  
 Alibaba开源的Java诊断工具，采用命令行交互模式，提供了丰富的功能，是排查jvm相关问题的利器。
-#### hsdb
-探索JVM的运行时数据，强大的JVM运行时状态分析工具。
-#### jdb  
-Java调试器，通常称为jdb，是检测Java程序中的错误的有用工具。
-#### jconsole  
+#### HSDB
+探索JVM的运行时数据，强大的JVM运行时状态分析工具（注：由于jdk8以上开始实施模块化，导致HSDB与其的运行机制不兼容）。
+#### JDB  
+Java调试器，通常称为JDB，是检测Java程序中的错误的有用工具。
+#### JConsole  
 jdk内置的Java性能分析器，用于对JVM中内存，线程和类等的监控。
-#### vjmap  
-JMAP的分代打印版   
+#### VJMap  
+JMAP的分代打印版（注：由于jdk8以上开始实施模块化，导致VJMap与其的运行机制不兼容）。  
 #### perf  
-提供一个性能分析框架，包含CPU、PMU(Performance Monitoring Unit)、tracepoint等功能。
+提供一个性能分析框架，包含CPU、PMU(Performance Monitoring Unit)、tracepoint等功能（注：只能运行在linux下）。
 #### doraemon
 提供jvm参数分析，线程离线分析以及内存离线分析的功能
 
 更丰富的内容，建议您前往[插件中心](http://plugin.xpocket.perfma.com/) 查看
 
-### 三 Tips
-#### 依赖项说明
-- sa-jdi.jar 主要用于支持插件vjmap的正常使用，对别的功能无影响。
+## 三 Tips
+- sa-jdi.jar 主要用于支持插件VJMap的正常使用（注：由于jdk8以上开始实施模块化，导致VJMap的运行机制不兼容）。
+- 框架扩展开发的包依赖: com.perfma.xlab:xpocket-framework-spi:2.0.0-RELEASE
