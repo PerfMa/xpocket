@@ -48,10 +48,6 @@ public class DefaultPluginLoader implements PluginLoader {
                 }
             });
 
-            if(plugins == null || plugins.length == 0) {
-                return true;
-            }
-
             HashSet<String> nameUniIndex = new HashSet<>();
             for (File plugin : plugins) {
                 XPocketPluginClassLoader pluginLoader
@@ -87,33 +83,33 @@ public class DefaultPluginLoader implements PluginLoader {
                     }
 
                     String pluginInfo = "";
-                    
+
                     if (!StringUtils.isblank(plugin_author)) {
                         pluginInfo += "@|white plugin-author       : " + plugin_author + " |@" + TerminalUtil.lineSeparator;
                     }
-                    
+
                     if (!StringUtils.isblank(plugin_project)) {
                         pluginInfo += "@|white plugin-project      : " + plugin_project + " |@" + TerminalUtil.lineSeparator;
                     }
-                    
+
                     if (!StringUtils.isblank(plugin_version)) {
                         pluginInfo += "@|white plugin-version      : " + plugin_version + " |@" + TerminalUtil.lineSeparator;
                     }
-                    
+
                     if (!StringUtils.isblank(tool_author)) {
                         pluginInfo += "@|white tools-author        : " + tool_author + " |@" + TerminalUtil.lineSeparator;
                     }
-                                        
+
                     if (!StringUtils.isblank(tool_project)) {
-                        pluginInfo += "@|white tool-project       : " + tool_project + " |@" + TerminalUtil.lineSeparator;
+                        pluginInfo += "@|white tool-project        : " + tool_project + " |@" + TerminalUtil.lineSeparator;
                     }
-                    
+
                     if (!StringUtils.isblank(tool_version)) {
-                        pluginInfo += "@|white tool-version       : " + tool_version + " |@" + TerminalUtil.lineSeparator;
+                        pluginInfo += "@|white tool-version        : " + tool_version + " |@" + TerminalUtil.lineSeparator;
                     }
 
                     context.setPluginInfo(pluginInfo);
-                    
+
                     if (pluginMain != null) {
                         context.setPluginClass(pluginLoader.loadClass(pluginMain));
                     }
@@ -159,7 +155,7 @@ public class DefaultPluginLoader implements PluginLoader {
                                     for (CommandInfo info : infos) {
                                         cmdMap.put(info.name(),
                                                 new DefaultCommandContext(info.name(),
-                                                        info.usage(), info.index(),commandObject));
+                                                        info.usage(), info.index(), commandObject));
                                     }
 
                                     //collect commandlist infomation
@@ -176,7 +172,7 @@ public class DefaultPluginLoader implements PluginLoader {
                                                     new DefaultCommandContext(names[i],
                                                             usages.length > i
                                                                     ? usages[i]
-                                                                    : "", 50,commandObject));
+                                                                    : "", 50, commandObject));
                                         }
                                     }
                                 } else if (XPOCKET_PLUGIN_CLASS.isAssignableFrom(pluginClass)

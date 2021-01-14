@@ -1,9 +1,6 @@
 
 
 ## XPocket
-
-![XPocket](resourse/xpocket.jpg)
-
 `XPocket` 是PerfMa开源的一套工具整合方案，集合了多个优秀的开源工具，现阶段主要侧重性能领域，工具之间可以相互配合的进行工作，开发人员也可以快速的开发属于自己的插件。
 
 当你遇到以下类似问题时，`XPocket`可以帮助到你：
@@ -15,62 +12,14 @@
 
 `XPocket`支持JDK 8+，支持Linux/Mac/Windows，采用命令行交互模式，提供丰富的 `Tab` 自动补全功能，支持管道操作。
 
+更丰富的内容，建议您前往[XPocket官方网站](https://xpocket.perfma.com/) 查看
+更多插件建议前往[XPocket插件中心](https://plugin.xpocket.perfma.com)下载使用
 
-### 在线教程(推荐)
+### Tips
+#### 依赖项说明
+- sa-jdi.jar 主要用于支持插件vjmap的正常使用，对别的功能无影响。
 
-* [基础教程](http://xpocket.perfma.com/tutorials/)
-
-### 一 快速开始
-
-### 1.下载模拟程序，解压并运行
-```bash
-wget https://a.perfma.net/xpocket/download/XPocket-demo.tar.gz
-tar -xvf  XPocket-demo.tar.gz
-cd simulator
-sh run.sh
-```
-
-### 2.下载xpocket，然后解压并运行
-```bash
-wget https://a.perfma.net/xpocket/download/XPocket.tar.gz
-tar -xvf  XPocket.tar.gz
-sh xpocket/start.sh
-```
-启动成功后如下所示
-![plugins](resourse/start.png)
-
-
-#### 3.使用插件
-1.查看插件列表
-```bash
-plugins
-```
-列表如下图所示
-![plugins](resourse/plugins.png)
-
-2.使用命令 use + pluginName 或者 use + pluginName@NameSpace 来使用插件，如下所示
-```bash
-use arthas@ALIBABA
-```
-
-#### 4.切换插件
-- 查看插件列表
-- 使用 use + pluginName 或者 use + pluginName@NameSpace 来使用插件
-
-#### 5.退出插件
-XPocket退出插件的方式很简单，只需要使用命令 `cd` 即可，cd命令可以退出当前插件，使得当前的操作空间回到系统层，如下图所示。
-![cd](resourse/cd.png)
-
-
-#### 7.退出XPocket
-
-退出XPocket使用命令 `quit` 即可，如下图所示
-
-![quit](resourse/quit.jpg)
-
-
-
-### 二 插件开发
+### 插件开发
 插件开发主要包括以下的几个要素：
 - XPocketPlugin （主要负责处理插件生命周期相关的工作，非必要）
 - XPocketCommand （封装了命令实现，必要）
@@ -307,25 +256,3 @@ main-implementation=com.perfma.xlab.xpocket.arthas.plugin.ArthasPlugin
 #### 5.提示
 插件开发的包依赖：com.perfma.xlab:xpocket-plugin-spi:2.0.0-RELEASE  
 框架扩展开发的包依赖: com.perfma.xlab:xpocket-framework-spi:2.0.0-RELEASE
-
-#### 6. 现有插件
-#### arthas  
-Alibaba开源的Java诊断工具，采用命令行交互模式，提供了丰富的功能，是排查jvm相关问题的利器。
-#### hsdb
-探索JVM的运行时数据，强大的JVM运行时状态分析工具。
-#### jdb  
-Java调试器，通常称为jdb，是检测Java程序中的错误的有用工具。
-#### jconsole  
-jdk内置的Java性能分析器，用于对JVM中内存，线程和类等的监控。
-#### vjmap  
-JMAP的分代打印版   
-#### perf  
-提供一个性能分析框架，包含CPU、PMU(Performance Monitoring Unit)、tracepoint等功能。
-#### doraemon
-提供jvm参数分析，线程离线分析以及内存离线分析的功能
-
-更丰富的内容，建议您前往[插件中心](http://plugin.xpocket.perfma.com/) 查看
-
-### 三 Tips
-#### 依赖项说明
-- sa-jdi.jar 主要用于支持插件vjmap的正常使用，对别的功能无影响。

@@ -3,6 +3,7 @@
     <id>ear</id>
     <formats>
         <format>tar.gz</format>
+        <format>zip</format>
     </formats>
     <includeBaseDirectory>true</includeBaseDirectory>
     <baseDirectory>xpocket</baseDirectory>
@@ -31,13 +32,6 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>resourse</directory>
-            <outputDirectory>resourse</outputDirectory>
-            <includes>
-                <include>*</include>
-            </includes>
-        </fileSet>
-        <fileSet>
             <directory>tools/windows</directory>
             <outputDirectory>tools/windows</outputDirectory>
             <includes>
@@ -59,13 +53,6 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>tools/sa-jdi</directory>
-            <outputDirectory>lib/</outputDirectory>
-            <includes>
-                <include>*</include>
-            </includes>
-        </fileSet>
-        <fileSet>
             <directory>plugins</directory>
             <outputDirectory>plugins</outputDirectory>
             <includes>
@@ -73,4 +60,14 @@
             </includes>
         </fileSet>
     </fileSets>
+    <files>
+        <file>
+            <source>../LICENSE</source>
+            <outputDirectory></outputDirectory>
+        </file>
+        <file>
+            <source>../README</source>
+            <outputDirectory></outputDirectory>
+        </file>
+    </files>
 </assembly>

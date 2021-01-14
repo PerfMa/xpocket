@@ -19,6 +19,7 @@ import com.perfma.xlab.xpocket.ui.UIEngine;
 import com.perfma.xlab.xpocket.utils.LogoPrinter;
 import com.perfma.xlab.xpocket.utils.TerminalUtil;
 import com.perfma.xlab.xpocket.utils.XPocketConstants;
+import com.sun.tools.attach.AgentLoadException;
 import org.jline.reader.*;
 import org.jline.reader.impl.completer.AggregateCompleter;
 import org.jline.reader.impl.completer.NullCompleter;
@@ -124,6 +125,8 @@ public class DefaultUIEngine implements UIEngine {
                         TerminalUtil.printTail(systemProcess, info);
                     }
                 }
+            } catch (AgentLoadException | IOException ex) {
+                systemProcess.output("Please check your jdk version both used to run XPocket and target processor! They must be equal!");
             } catch (EndOfInputException ex) {
                 throw ex;
             } catch (Throwable ex) { // command execution problem
@@ -242,7 +245,7 @@ public class DefaultUIEngine implements UIEngine {
         sysPluginContext.setName(XPocketConstants.SYSTEM_PLUGIN_NAME);
         sysPluginContext.setNamespace(XPocketConstants.SYSTEM_PLUGIN_NS);
         String tips = "  1.you can use the \"plugins\" command to list available plugins" + TerminalUtil.lineSeparator
-                + "  2.you can use help to see the detailed usage of the command" + TerminalUtil.lineSeparator
+                + "  2.you can use \"help\" to see the detailed usage of the command" + TerminalUtil.lineSeparator
                 + "  3.You can use the commands supported by the current operating system itself."
                 + " For example, under linux, "
                 + "you can use the \"ps\" command to list all processes，"
