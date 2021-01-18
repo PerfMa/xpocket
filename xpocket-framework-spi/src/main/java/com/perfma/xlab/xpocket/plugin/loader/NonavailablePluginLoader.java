@@ -5,6 +5,7 @@ import com.perfma.xlab.xpocket.plugin.context.FrameworkPluginContext;
 
 import java.util.Set;
 import java.util.TreeSet;
+
 import com.perfma.xlab.xpocket.spi.context.PluginBaseInfo;
 
 /**
@@ -35,7 +36,7 @@ public class NonavailablePluginLoader implements PluginLoader {
     }
 
     @Override
-    public FrameworkPluginContext getPlugin(String name,String namespace) {
+    public FrameworkPluginContext getPlugin(String name, String namespace) {
         return null;
     }
 }

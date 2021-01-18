@@ -14,7 +14,7 @@ import java.util.Set;
  * @author xinxian
  * @create 2020-09-08 14:37
  **/
-@CommandInfo(name = "plugins", usage = "you can use the \"plugins\" command to list available plugins",index=0)
+@CommandInfo(name = "plugins", usage = "you can use the \"plugins\" command to list available plugins", index = 0)
 public class ListPluginsCommand extends AbstractSystemCommand {
 
     @Override
@@ -29,7 +29,7 @@ public class ListPluginsCommand extends AbstractSystemCommand {
                 process.output("@|green " + cmd + " |@" + TerminalUtil.lineSeparator);
             });
         } else {
-            
+
             final Set<FrameworkPluginContext> availablePlugins = PluginManager.getAvailablePlugins();
             process.output("Valid Plugins" + TerminalUtil.lineSeparator);
             process.output("@|white " + fillSpace(" plugin_name", 15) + " |@     @|white  " + "namespace" + " |@" + TerminalUtil.lineSeparator);
@@ -44,10 +44,9 @@ public class ListPluginsCommand extends AbstractSystemCommand {
 
     @Override
     public String[] tips() {
-        return new String[]{"you can use command \"use <plugin_name>\" or \"use <plugin_name@namespace>\" to use the plugin"}; 
+        return new String[]{"you can use command \"use <plugin_name>\" or \"use <plugin_name@namespace>\" to use the plugin"};
     }
-    
-    
+
 
     private String fillSpace(String src, int size) {
 

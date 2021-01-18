@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.jline.reader.Candidate;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
@@ -39,10 +40,10 @@ public class ParamsCompleter implements Completer {
                         command = line.words().get(commandIndex);
                     }
 
-                    if(command.contains("|")) {
+                    if (command.contains("|")) {
                         command = command.substring(command.indexOf("|") + 1);
                     }
-                    
+
                     break;
                 }
 

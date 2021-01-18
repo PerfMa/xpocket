@@ -7,15 +7,16 @@ import java.util.Collections;
 import java.util.Map;
 
 
-
 public class XPocketBanner {
 
     private static String LOGO_LOCATION = System.getProperty("config_dir") + "logo.txt";
 
     private static String LOGO = "";
-    
-    /* XPocket logo 颜色顺序 */
-    private static final String[] COLORS = {"red","magenta","yellow","green","magenta","yellow","cyan"};
+
+    /**
+     * XPocket logo 颜色顺序
+     */
+    private static final String[] COLORS = {"red", "magenta", "yellow", "green", "magenta", "yellow", "cyan"};
 
     static {
         try {
@@ -23,20 +24,20 @@ public class XPocketBanner {
             String[] elements = logoText.split("\n");
             int /*高度*/h = 5,/*字符数*/c = 7,/*宽度*/w = 8;
             StringBuilder logoBuilder = new StringBuilder(logoText.length());
-            
-            for(int i=0;i<h;i++) {
-                for(int j=0;j<7;j++) {
+
+            for (int i = 0; i < h; i++) {
+                for (int j = 0; j < 7; j++) {
                     String line = elements[j * h + i];
                     logoBuilder.append("@|")
                             .append(COLORS[j])
                             .append(StringUtils.fillWithSpace(line, w))
                             .append("|@");
-                } 
+                }
                 logoBuilder.append(TerminalUtil.lineSeparator);
             }
-            
+
             LOGO = logoBuilder.substring(0, logoBuilder.length());
-            
+
         } catch (Throwable e) {
             e.printStackTrace();
         }

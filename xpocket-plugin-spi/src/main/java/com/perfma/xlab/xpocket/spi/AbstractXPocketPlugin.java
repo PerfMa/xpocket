@@ -5,6 +5,7 @@ import com.perfma.xlab.xpocket.spi.process.XPocketProcess;
 
 /**
  * empty implementation of XPocketPlugin
+ *
  * @author gongyu <yin.tong@perfma.com>
  */
 public abstract class AbstractXPocketPlugin implements XPocketPlugin {
@@ -23,5 +24,5 @@ public abstract class AbstractXPocketPlugin implements XPocketPlugin {
 
     @Override
     public void printLogo(XPocketProcess process) {}
-   
+
 }

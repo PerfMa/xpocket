@@ -4,7 +4,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 /**
- *
  * @author gongyu <yin.tong@perfma.com>
  */
 public class XPocketPluginClassLoader extends URLClassLoader {
@@ -28,7 +27,7 @@ public class XPocketPluginClassLoader extends URLClassLoader {
     protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
         synchronized (getClassLoadingLock(name)) {
             Class<?> c = null;
-            
+
             //do not let plugin classloader load system classes
             if (name.startsWith("com.perfma.xlab.xpocket")) {
                 if (parent != null) {
@@ -41,7 +40,7 @@ public class XPocketPluginClassLoader extends URLClassLoader {
                     }
                 }
             }
-            
+
             if (c == null) {
                 // First, check if the class has already been loaded
                 c = findLoadedClass(name);

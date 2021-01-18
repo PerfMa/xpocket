@@ -4,6 +4,7 @@ import com.perfma.xlab.xpocket.plugin.command.CommandLoader;
 import com.perfma.xlab.xpocket.plugin.context.FrameworkPluginContext;
 
 import java.util.*;
+
 import com.perfma.xlab.xpocket.spi.context.PluginBaseInfo;
 
 /**
@@ -33,31 +34,31 @@ public class DefaultCommandLoader implements CommandLoader {
             final String namespace = pc.getNamespace();
             String name = pc.getName();
             Set<String> commands = pc.getCommands();
-            cmdTable.put(String.format("%s@%s", name,namespace.toUpperCase()),
+            cmdTable.put(String.format("%s@%s", name, namespace.toUpperCase()),
                     commands);
             commands.forEach(command
                     -> {
-                String shortName = String.format("%s.%s",name,command);
-                String completeName = String.format("%s.%s@%s", name, command,namespace);
-                
+                String shortName = String.format("%s.%s", name, command);
+                String completeName = String.format("%s.%s@%s", name, command, namespace);
+
                 //command index
-                if(tempRepeateIndex.contains(command)) {
+                if (tempRepeateIndex.contains(command)) {
                     cmdIndex.remove(command);
                 } else {
                     tempRepeateIndex.add(command);
                     cmdIndex.put(command, pc);
                 }
-                
+
                 //shortname index
-                if(tempRepeateIndex.contains(shortName)) {
+                if (tempRepeateIndex.contains(shortName)) {
                     cmdIndex.remove(shortName);
                 } else {
                     tempRepeateIndex.add(shortName);
                     cmdIndex.put(shortName, pc);
                 }
-                
+
                 cmdIndex.put(completeName, pc);
-                
+
             });
         });
 

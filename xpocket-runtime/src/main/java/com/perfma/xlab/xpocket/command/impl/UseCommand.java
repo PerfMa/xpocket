@@ -13,7 +13,7 @@ import com.perfma.xlab.xpocket.spi.context.PluginBaseInfo;
  * @author xinxian
  * @create 2020-09-08 14:38
  **/
-@CommandInfo(name = "use", usage = "you can use command \"use [plugin_name]\" or \"use [plugin_name@namespace]\" to use the plugin",index=1)
+@CommandInfo(name = "use", usage = "you can use command \"use [plugin_name]\" or \"use [plugin_name@namespace]\" to use the plugin", index = 1)
 public class UseCommand extends AbstractSystemCommand {
 
     @Override
@@ -36,13 +36,13 @@ public class UseCommand extends AbstractSystemCommand {
 
         if (pluginContext != null) {
             try {
-                XPocketStatusContext.open(pluginContext,process);
+                XPocketStatusContext.open(pluginContext, process);
                 TerminalUtil.printHelp(process, pluginContext);
             } catch (Throwable throwable) {
                 process.output("Display help information error : " + throwable.getMessage() + TerminalUtil.lineSeparator);
                 XPocketStatusContext.open(PluginManager
                         .getPlugin(XPocketConstants.SYSTEM_PLUGIN_NAME,
-                                XPocketConstants.SYSTEM_PLUGIN_NS),process);
+                                XPocketConstants.SYSTEM_PLUGIN_NS), process);
             }
         }
         process.end();

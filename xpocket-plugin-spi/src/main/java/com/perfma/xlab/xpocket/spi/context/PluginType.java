@@ -5,6 +5,6 @@ package com.perfma.xlab.xpocket.spi.context;
  */
 public enum PluginType {
 
-    JAVA,C,ALL;
+    JAVA, C, ALL;
 
 }

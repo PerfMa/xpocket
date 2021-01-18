@@ -7,6 +7,7 @@ import com.perfma.xlab.xpocket.plugin.context.FrameworkPluginContext;
 import com.perfma.xlab.xpocket.plugin.manager.CommandManager;
 import com.perfma.xlab.xpocket.plugin.manager.PluginManager;
 import com.perfma.xlab.xpocket.utils.XPocketConstants;
+
 import java.io.File;
 
 import java.io.FileInputStream;
@@ -29,16 +30,16 @@ public class CommandProcessor {
     public static void init(DefaultXPocketProcess process) {
         aliases = new HashSet<>();
         File resourceFile = new File(RESOURCE);
-        
+
         try {
-            if(!resourceFile.exists()) {
+            if (!resourceFile.exists()) {
                 resourceFile.createNewFile();
             }
         } catch (Throwable ex) {
             process.output("ERROR : create process store file failed,cause by : " + ex.getMessage());
             System.exit(1);
         }
-        
+
         try (FileInputStream inputStream = new FileInputStream(resourceFile)) {
             Properties properties = new Properties();
             properties.load(inputStream);

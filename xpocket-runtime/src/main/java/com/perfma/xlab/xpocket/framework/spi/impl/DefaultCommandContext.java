@@ -1,29 +1,29 @@
 package com.perfma.xlab.xpocket.framework.spi.impl;
 
 import java.util.Objects;
+
 import com.perfma.xlab.xpocket.spi.command.XPocketCommand;
 import com.perfma.xlab.xpocket.spi.context.JavaTarget;
 import com.perfma.xlab.xpocket.spi.context.PluginType;
 import com.perfma.xlab.xpocket.spi.context.CommandBaseInfo;
 
 /**
- *
  * @author gongyu <yin.tong@perfma.com>
  */
 public class DefaultCommandContext implements CommandBaseInfo {
 
     private final String name;
-    
+
     private final String usage;
-    
+
     private final int index;
-    
+
     private PluginType type;
     private JavaTarget target;
-    
+
     private final XPocketCommand instance;
 
-    public DefaultCommandContext(String name, String usage,int index, XPocketCommand instance) {
+    public DefaultCommandContext(String name, String usage, int index, XPocketCommand instance) {
         this.name = name;
         this.usage = usage;
         this.index = index;
@@ -44,7 +44,7 @@ public class DefaultCommandContext implements CommandBaseInfo {
     public int index() {
         return index;
     }
-    
+
     @Override
     public XPocketCommand instance() {
         return instance;
@@ -69,5 +69,5 @@ public class DefaultCommandContext implements CommandBaseInfo {
         final DefaultCommandContext other = (DefaultCommandContext) obj;
         return Objects.equals(this.name, other.name);
     }
-   
+
 }

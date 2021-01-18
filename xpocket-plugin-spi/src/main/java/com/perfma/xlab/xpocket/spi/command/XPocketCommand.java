@@ -9,13 +9,14 @@ import com.perfma.xlab.xpocket.spi.process.XPocketProcess;
  */
 public interface XPocketCommand {
 
-        
+
     /**
      * init XPocketCommand instance
-     * @param plugin 
+     *
+     * @param plugin
      */
     void init(XPocketPlugin plugin);
-    
+
     /**
      * Do this command support piped execution.
      *
@@ -33,7 +34,8 @@ public interface XPocketCommand {
 
     /**
      * detail current command
-     * @return 
+     *
+     * @return
      */
     String details(String cmd);
 
@@ -45,10 +47,11 @@ public interface XPocketCommand {
      * @throws java.lang.Throwable
      */
     void invoke(XPocketProcess process, SessionContext context) throws Throwable;
-    
+
     /**
      * return some details of command usage.
-     * @return 
+     *
+     * @return
      */
     String[] tips();
 

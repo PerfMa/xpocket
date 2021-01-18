@@ -22,7 +22,7 @@ public class HelpCommand extends AbstractSystemCommand {
     @Override
     public void invoke(XPocketProcess process) {
         final String[] args = process.getArgs();
-        FrameworkPluginContext context = (FrameworkPluginContext)XPocketStatusContext.instance.currentPlugin();
+        FrameworkPluginContext context = (FrameworkPluginContext) XPocketStatusContext.instance.currentPlugin();
         if (args != null && args.length >= 1 && !"".equals(args[0])) {
             final String arg = args[0];
             String pluginName = context.getName();

@@ -6,7 +6,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
  * @author gongyu <yin.tong@perfma.com>
  */
 @Target(ElementType.TYPE)

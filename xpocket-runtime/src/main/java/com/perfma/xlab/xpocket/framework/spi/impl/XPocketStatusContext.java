@@ -7,6 +7,7 @@ import com.perfma.xlab.xpocket.utils.TerminalUtil;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.fusesource.jansi.Ansi;
 import com.perfma.xlab.xpocket.spi.context.PluginBaseInfo;
 import com.perfma.xlab.xpocket.spi.context.CommandBaseInfo;
@@ -34,20 +35,20 @@ public class XPocketStatusContext implements SessionContext {
     private XPocketStatusContext() {
     }
 
-    public static void open(FrameworkPluginContext context,XPocketProcess process) {
+    public static void open(FrameworkPluginContext context, XPocketProcess process) {
         if (!sessions.containsKey(context)) {
             XPocketStatusContext sessionContext = new XPocketStatusContext();
             sessionContext.pluginContext = context;
             sessions.putIfAbsent(context, sessionContext);
         }
-        
-        if(instance != null && instance.pluginContext.getPlugin(process) != null) {
+
+        if (instance != null && instance.pluginContext.getPlugin(process) != null) {
             instance.pluginContext.getPlugin(process).switchOff(instance);
         }
-        
+
         instance = sessions.get(context);
         instance.pluginContext.init(process);
-        if(instance != null && instance.pluginContext.getPlugin(process) != null) {
+        if (instance != null && instance.pluginContext.getPlugin(process) != null) {
             instance.pluginContext.getPlugin(process).printLogo(process);
             process.output(TerminalUtil.lineSeparator);
             instance.pluginContext.getPlugin(process).switchOn(instance);
@@ -63,7 +64,7 @@ public class XPocketStatusContext implements SessionContext {
         if (pluginContext != null) {
             String name = pluginContext.getName();
             name = Ansi.ansi().fg(Ansi.Color.YELLOW).a(name).reset().toString();
-            sb.append(name); 
+            sb.append(name);
             if (pid >= 0) {
                 sb.append(colon).append(pid).append(end);
             } else {

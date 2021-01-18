@@ -51,10 +51,10 @@ public class DefaultXPocketProcess implements XPocketProcess {
             if (output != null) {
                 if (this.output != null) {
                     String[] lines = output.split(TerminalUtil.lineSeparator);
-                    if(lines.length == 0) {
+                    if (lines.length == 0) {
                         this.output.print(output);
                     } else {
-                        for(String line : lines) {
+                        for (String line : lines) {
                             this.output.print(simpleFormatOutput(line));
                         }
                     }

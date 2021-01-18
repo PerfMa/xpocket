@@ -17,25 +17,29 @@ public interface XPocketPlugin {
 
     /**
      * destory the resource current plugin used.
+     *
      * @throws java.lang.Throwable
      */
     void destory() throws Throwable;
-    
+
     /**
      * when XPocket switched on this plugin,it will call this method
-     * @param context 
+     *
+     * @param context
      */
     void switchOn(SessionContext context);
-    
+
     /**
      * when XPocket switched off or leave this plugin,it will call this method
-     * @param context 
+     *
+     * @param context
      */
     void switchOff(SessionContext context);
-    
+
     /**
      * print plugin`s own logo when switch in this plugin
-     * @param process 
+     *
+     * @param process
      */
     void printLogo(XPocketProcess process);
 

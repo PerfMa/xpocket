@@ -5,13 +5,12 @@ import com.perfma.xlab.xpocket.spi.XPocketPlugin;
 import com.perfma.xlab.xpocket.spi.process.XPocketProcess;
 
 /**
- *
  * @author gongyu <yin.tong@perfma.com>
  */
 public abstract class AbstractXPocketCommand implements XPocketCommand {
 
     protected XPocketPlugin plugin;
-    
+
     @Override
     public boolean isPiped() {
         //false for default
@@ -37,12 +36,13 @@ public abstract class AbstractXPocketCommand implements XPocketCommand {
     public void invoke(XPocketProcess process, SessionContext context) throws Throwable {
         invoke(process);
     }
-    
-    public void invoke(XPocketProcess process) throws Throwable {}
+
+    public void invoke(XPocketProcess process) throws Throwable {
+    }
 
     @Override
     public String[] tips() {
         return null;
     }
-    
+
 }
