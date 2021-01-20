@@ -27,4 +27,4 @@ sa_jdi_jar=`ls ${JAVA_HOME}/lib/sa-jdi.jar`
 cp $sa_jdi_jar ${APP_HOME}/lib/
 LAUNCHER="com.perfma.xlab.xpocket.launcher.XPocketLauncher"
 
-java -cp .:${tools_jar}:${APP_HOME}/lib/* ${DEBUG_OPT} -DPLUGIN_PATH=${APP_HOME}/plugins -Dconfig_dir=${APP_HOME}/config/ -Djava.library.path=%BASEDIR%/tools/${OS}/ ${LAUNCHER} $*
+java -cp .:${tools_jar}:${APP_HOME}/lib/* ${DEBUG_OPT} -DPLUGIN_PATH=${APP_HOME}/plugins -Dconfig_dir=${APP_HOME}/config/ -Djava.library.path=%BASEDIR%/tools/${OS}/ ${LAUNCHER} "$@"
