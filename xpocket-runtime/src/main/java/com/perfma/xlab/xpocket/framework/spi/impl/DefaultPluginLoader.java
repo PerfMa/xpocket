@@ -23,7 +23,7 @@ import java.util.zip.ZipInputStream;
 /**
  * @author gongyu <yin.tong@perfma.com>
  */
-public class DefaultPluginLoader implements PluginLoader {
+public class DefaultPluginLoader extends DefaultNamedObject implements PluginLoader {
 
     private static final String XLAB_SPI_PACKAGE = "com.perfma.xlab.xpocket.spi.";
 

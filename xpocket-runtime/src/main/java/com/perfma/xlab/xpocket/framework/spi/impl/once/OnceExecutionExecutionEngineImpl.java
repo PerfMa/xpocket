@@ -1,19 +1,18 @@
-package com.perfma.xlab.xpocket.framework.spi.impl;
+package com.perfma.xlab.xpocket.framework.spi.impl.once;
 
+import com.perfma.xlab.xpocket.console.EndOfInputException;
 import com.perfma.xlab.xpocket.framework.spi.execution.pipeline.ExecutionPipeLine;
 import com.perfma.xlab.xpocket.plugin.execution.ExecutionEngine;
 import com.perfma.xlab.xpocket.plugin.execution.Node;
 import com.perfma.xlab.xpocket.plugin.execution.XpocketProcessInfo;
 import org.jline.reader.LineReader;
-import org.jline.reader.UserInterruptException;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author gongyu <yin.tong@perfma.com>
  */
-public class DefaultExecutionEngine extends DefaultNamedObject implements ExecutionEngine {
-
+public class OnceExecutionExecutionEngineImpl extends OnceNamedObject implements ExecutionEngine {
+    
     @Override
     public void invoke(XpocketProcessInfo info, LineReader reader) throws Throwable {
 
@@ -23,41 +22,21 @@ public class DefaultExecutionEngine extends DefaultNamedObject implements Execut
             pipeline.appendProcess(node);
         }
 
-        final AtomicBoolean isEnd = new AtomicBoolean(false);
         Thread mainThread = Thread.currentThread();
         Throwable[] exs = new Throwable[1];
 
         Thread executeThread = new Thread(() -> {
             try {
                 pipeline.start();
-            } catch (InterruptedException ie) {
-                //ignore it
-                isEnd.set(true);
+            } catch (InterruptedException | EndOfInputException ie) {
                 return;
             } catch (Throwable ex) {
-                if (!isEnd.get()) {
-                    exs[0] = ex;
-                }
-            }
-            if (isEnd.compareAndSet(false, true)) {
-                mainThread.interrupt();
+                exs[0] = ex;
             }
         });
         executeThread.start();
 
-        try {
-            for (; ; ) {
-                if (isEnd.get()) {
-                    break;
-                }
-                reader.readLine();
-            }
-        } catch (UserInterruptException ex) {
-            executeThread.interrupt();
-            pipeline.interrupt();
-            isEnd.set(true);
-            //ignore
-        }
+        executeThread.join();
 
         if (exs[0] != null) {
             throw exs[0];

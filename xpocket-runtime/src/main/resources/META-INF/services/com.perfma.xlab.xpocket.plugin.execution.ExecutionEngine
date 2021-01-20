@@ -1,1 +1,2 @@
 com.perfma.xlab.xpocket.framework.spi.impl.DefaultExecutionEngine
+com.perfma.xlab.xpocket.framework.spi.impl.once.OnceExecutionExecutionEngineImpl

@@ -1,11 +1,12 @@
 package com.perfma.xlab.xpocket.plugin.execution;
 
+import com.perfma.xlab.xpocket.plugin.base.NamedObject;
 import org.jline.reader.LineReader;
 
 /**
  * @author gongyu <yin.tong@perfma.com>
  */
-public interface ExecutionEngine {
+public interface ExecutionEngine extends NamedObject {
 
     /**
      * An instruction to

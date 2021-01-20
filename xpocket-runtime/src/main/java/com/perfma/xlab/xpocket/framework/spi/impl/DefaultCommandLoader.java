@@ -4,12 +4,11 @@ import com.perfma.xlab.xpocket.plugin.command.CommandLoader;
 import com.perfma.xlab.xpocket.plugin.context.FrameworkPluginContext;
 
 import java.util.*;
-import com.perfma.xlab.xpocket.spi.context.PluginBaseInfo;
 
 /**
  * @author gongyu <yin.tong@perfma.com>
  */
-public class DefaultCommandLoader implements CommandLoader {
+public class DefaultCommandLoader extends DefaultNamedObject implements CommandLoader {
 
     private static final TreeMap<String, FrameworkPluginContext> cmdIndex = new TreeMap<>();
 

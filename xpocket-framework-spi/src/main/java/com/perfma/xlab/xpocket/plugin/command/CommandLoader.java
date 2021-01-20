@@ -1,5 +1,6 @@
 package com.perfma.xlab.xpocket.plugin.command;
 
+import com.perfma.xlab.xpocket.plugin.base.NamedObject;
 import com.perfma.xlab.xpocket.plugin.context.FrameworkPluginContext;
 
 import java.util.Map;
@@ -8,7 +9,7 @@ import java.util.Set;
 /**
  * @author gongyu <yin.tong@perfma.com>
  */
-public interface CommandLoader {
+public interface CommandLoader extends NamedObject {
 
     /**
      * Gets the correspondence between the plug-in and the command list

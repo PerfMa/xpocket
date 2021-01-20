@@ -1,14 +1,14 @@
-package com.perfma.xlab.xpocket.framework.spi.impl;
+package com.perfma.xlab.xpocket.framework.spi.impl.once;
 
 import com.perfma.xlab.xpocket.command.impl.AbstractSystemCommand;
-import com.perfma.xlab.xpocket.completer.CommandCompleter;
-import com.perfma.xlab.xpocket.completer.GroupStringCompleter;
-import com.perfma.xlab.xpocket.completer.ParamsCompleter;
 import com.perfma.xlab.xpocket.console.EndOfInputException;
 import com.perfma.xlab.xpocket.framework.spi.execution.pipeline.DefaultNode;
 import com.perfma.xlab.xpocket.framework.spi.execution.pipeline.DefaultProcessInfo;
 import com.perfma.xlab.xpocket.framework.spi.execution.pipeline.DefaultXPocketProcess;
-import com.perfma.xlab.xpocket.linereader.XPocketLineReader;
+import com.perfma.xlab.xpocket.framework.spi.impl.CommandProcessor;
+import com.perfma.xlab.xpocket.framework.spi.impl.DefaultCommandContext;
+import com.perfma.xlab.xpocket.framework.spi.impl.DefaultPluginContext;
+import com.perfma.xlab.xpocket.framework.spi.impl.XPocketStatusContext;
 import com.perfma.xlab.xpocket.plugin.context.FrameworkPluginContext;
 import com.perfma.xlab.xpocket.plugin.manager.CommandManager;
 import com.perfma.xlab.xpocket.plugin.manager.ExecutionManager;
@@ -16,70 +16,34 @@ import com.perfma.xlab.xpocket.plugin.manager.PluginManager;
 import com.perfma.xlab.xpocket.spi.command.CommandInfo;
 import com.perfma.xlab.xpocket.spi.command.XPocketCommand;
 import com.perfma.xlab.xpocket.plugin.ui.UIEngine;
-import com.perfma.xlab.xpocket.utils.LogoPrinter;
 import com.perfma.xlab.xpocket.utils.TerminalUtil;
 import com.perfma.xlab.xpocket.utils.XPocketConstants;
 import com.sun.tools.attach.AgentLoadException;
 import org.jline.reader.*;
-import org.jline.reader.impl.completer.AggregateCompleter;
-import org.jline.reader.impl.completer.NullCompleter;
-import org.jline.reader.impl.history.DefaultHistory;
-import org.jline.terminal.Terminal;
-import org.jline.terminal.Terminal.SignalHandler;
-import org.jline.terminal.TerminalBuilder;
 
 import java.io.IOException;
 import java.util.*;
+import org.jline.reader.impl.DefaultParser;
 
 /**
  * @author gongyu <yin.tong@perfma.com>
  */
-public class DefaultUIEngine extends DefaultNamedObject implements UIEngine {
-    
-    private XPocketLineReader reader;
+public class OnceExecutionUIEngineImpl extends OnceNamedObject implements UIEngine {
 
+    protected Parser parser = new DefaultParser();
+    
     @Override
     public void start(String def, String[] args) {
         DefaultXPocketProcess systemProcess = new DefaultXPocketProcess("XPocket", null);
         systemProcess.setOutputStream(System.out);
         try {
-            Terminal terminal = TerminalBuilder.builder()
-                    .nativeSignals(true)
-                    .signalHandler(SignalHandler.SIG_IGN)
-                    .dumb(true).build();
-            reader = new XPocketLineReader(terminal);
-            reader.variable(LineReader.HISTORY_FILE, XPocketConstants.PATH + ".history");
             xpocketInit(def, systemProcess);
             CommandProcessor.init(systemProcess);
-            List<Completer> completers = new LinkedList<>();
-            ParamsCompleter paramsCompleter = new ParamsCompleter();
-            registryParamCompleter(paramsCompleter);
-            completers.add(buildCommandCompleter());
-            completers.add(paramsCompleter);
-            completers.add(new NullCompleter());
-            reader.setCompleter(new AggregateCompleter(completers));
-            reader.setHistory(new DefaultHistory(reader));
-            for (; ; ) {
-                try {
-                    waitForCommands(systemProcess);
-                } catch (UserInterruptException ex) {
-                    if (doubleCheckCtrlCQuit()) {
-                        systemProcess.output("\nBye.");
-                        break;
-                    }
-                }
-            }
-        } catch (EndOfInputException ex) {
-            systemProcess.output("\nBye.");
+            executeCommand(systemProcess,args);
         } catch (Throwable ex) {
             ex.printStackTrace();
-        } finally {
-            try {
-                TerminalUtil.OUTPUT.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
+        
         System.exit(0);
     }
 
@@ -88,26 +52,10 @@ public class DefaultUIEngine extends DefaultNamedObject implements UIEngine {
      *
      * @throws EndOfInputException
      */
-    private void waitForCommands(DefaultXPocketProcess systemProcess) throws EndOfInputException {
-        for (; ; ) {
-            String line = TerminalUtil.readLine(reader, XPocketStatusContext.instance.line());
-            if (line == null) {
-                break;
-            }
-            if ("".equalsIgnoreCase(line.trim())) {
-                continue;
-            }
-
-            switch (line.trim()) {
-                case "clear":
-                case "clr":
-                    reader.clearScreen();
-                    continue;
-                case "quit":
-                case "q":
-                    throw new EndOfInputException();
-                default:
-                    break;
+    private void executeCommand(DefaultXPocketProcess systemProcess,String[] args) throws EndOfInputException {
+            String line = args[0];
+            if (line == null || "".equalsIgnoreCase(line.trim())) {
+                return ;
             }
 
             try {
@@ -120,21 +68,15 @@ public class DefaultUIEngine extends DefaultNamedObject implements UIEngine {
 
                 if (infos != null) {
                     for (DefaultProcessInfo info : infos) {
-                        TerminalUtil.printHeader(systemProcess, info);
-                        ExecutionManager.invoke(info, reader);
-                        TerminalUtil.printTail(systemProcess, info);
+                        ExecutionManager.invoke(info, null);
                     }
                 }
             } catch (AgentLoadException | IOException ex) {
                 systemProcess.output("Please check your jdk version both used to run XPocket and target processor! They must be equal!");
-            } catch (EndOfInputException ex) {
-                throw ex;
             } catch (Throwable ex) { // command execution problem
-                ex.printStackTrace();
                 systemProcess.output("command execution has problem");
             }
-        }
-        throw new EndOfInputException();
+        
     }
 
     /**
@@ -167,7 +109,7 @@ public class DefaultUIEngine extends DefaultNamedObject implements UIEngine {
             // 解析各个管道符中的命令
             for (String cmdAndArg : pipelineCmdUnit) {
                 cmdAndArg = cmdAndArg.trim();
-                ParsedLine singleLine = reader.getParser().parse(cmdAndArg, 0);
+                ParsedLine singleLine = parser.parse(cmdAndArg, 0);
                 String cmd = singleLine.words().get(0);
                 String[] args = new String[singleLine.words().size() - 1];
 
@@ -211,15 +153,6 @@ public class DefaultUIEngine extends DefaultNamedObject implements UIEngine {
      * @param def
      */
     private void xpocketInit(String def, DefaultXPocketProcess systemProcess) {
-        systemProcess.output("@|green *** Welcome to XPocket-Cli|@ @|green ***|@");
-        systemProcess.output(TerminalUtil.lineSeparator);
-        LogoPrinter.print(systemProcess);
-        systemProcess.output(TerminalUtil.lineSeparator);
-        systemProcess.output("@|green Initiator : PerfMa |@");
-        systemProcess.output("@|green version   : " + XPocketConstants.VERSION + " |@");
-        systemProcess.output("@|green site      : " + XPocketConstants.CLUB + " |@");
-        systemProcess.output("@|green github    : " + XPocketConstants.GITHUB + " |@");
-        systemProcess.output(TerminalUtil.lineSeparator);
 
         // 初始化 System plugin
         DefaultPluginContext sysPluginContext = initSystemPlugin();
@@ -236,8 +169,6 @@ public class DefaultUIEngine extends DefaultNamedObject implements UIEngine {
         FrameworkPluginContext pluginContext = PluginManager.getPlugin(XPocketConstants.SYSTEM_PLUGIN_NAME, XPocketConstants.SYSTEM_PLUGIN_NS);
         pluginContext.init(systemProcess);
         XPocketStatusContext.open(pluginContext, systemProcess);
-        TerminalUtil.printHelp(systemProcess, pluginContext);
-        TerminalUtil.printTail(systemProcess, null);
     }
 
     private DefaultPluginContext initSystemPlugin() {
@@ -259,7 +190,7 @@ public class DefaultUIEngine extends DefaultNamedObject implements UIEngine {
                         + "Command");
                 XPocketCommand commandObject
                         = (XPocketCommand) pluginClass.getConstructor().newInstance();
-                ((AbstractSystemCommand) commandObject).setReader(reader);
+                ((AbstractSystemCommand) commandObject).setReader(null);
 
                 //collect commandinfo information
                 CommandInfo[] infos
@@ -277,60 +208,6 @@ public class DefaultUIEngine extends DefaultNamedObject implements UIEngine {
 
         sysPluginContext.setCommands(cmdMap);
         return sysPluginContext;
-    }
-
-    private boolean doubleCheckCtrlCQuit() {
-        try {
-            String line = reader.readLine("Quit XPocket? (N/Y,Default:N) : ");
-            return "y".equalsIgnoreCase(line);
-        } catch (UserInterruptException ex) {
-            return true;
-        }
-    }
-
-    private void registryParamCompleter(ParamsCompleter paramsCompleter) {
-        Set<String> plugins = new TreeSet<>();
-        PluginManager.getAllPlugins().forEach(plugin
-                -> plugins.add(
-                String.format("%s@%s", plugin.getName(),
-                        plugin.getNamespace().toUpperCase())));
-        GroupStringCompleter pluginCompleter = new GroupStringCompleter(plugins, "PLUGIN");
-        paramsCompleter.registry(XPocketConstants.SYSTEM_PLUGIN_NAME + ".use@" + XPocketConstants.SYSTEM_PLUGIN_NS.toUpperCase(), pluginCompleter);
-        paramsCompleter.registry(XPocketConstants.SYSTEM_PLUGIN_NAME + ".use", pluginCompleter);
-        paramsCompleter.registry("use", pluginCompleter);
-
-        GroupStringCompleter cmdCompleter = new GroupStringCompleter(getCommandCompleterWithPlugin());
-        AggregateCompleter helpCompleter = new AggregateCompleter(pluginCompleter, cmdCompleter);
-
-        paramsCompleter.registry(XPocketConstants.SYSTEM_PLUGIN_NAME + ".help@" + XPocketConstants.SYSTEM_PLUGIN_NS.toUpperCase(), helpCompleter);
-        paramsCompleter.registry(XPocketConstants.SYSTEM_PLUGIN_NAME + ".help", helpCompleter);
-        paramsCompleter.registry("help", helpCompleter);
-
-    }
-
-    private Set<Candidate> getCommandCompleterWithPlugin() {
-        Set<String> allCommand = CommandManager.cmdSet();
-        Set<Candidate> commands = new TreeSet<>();
-        commands.add(new Candidate("clear", "clear", "GLOBAL", null, null, null, true));
-        commands.add(new Candidate("quit", "quit", "GLOBAL", null, null, null, true));
-        for (String cmd : allCommand) {
-            if (cmd.contains(".")
-                    && cmd.contains("@")
-                    && (!cmd.startsWith("system.clear") && !cmd.startsWith("system.quit"))) {
-                String value = cmd.substring(0, cmd.indexOf("@"));
-                String group = cmd.substring(0, cmd.indexOf(".")) + cmd.substring(cmd.indexOf("@"), cmd.length()).toUpperCase();
-                commands.add(new Candidate(value, value, "PLUGIN_NAME : " + group, null, null, null, true));
-            }
-        }
-        //填充由经验积累得出的解决方案别名
-        for (String cmd : CommandProcessor.aliases) {
-            commands.add(new Candidate(cmd, cmd, "COMMAND_PROCESS", null, null, null, true));
-        }
-        return commands;
-    }
-
-    private Completer buildCommandCompleter() {
-        return new CommandCompleter(getCommandCompleterWithPlugin());
     }
 
     private String[][] parsePipeline(String line) {

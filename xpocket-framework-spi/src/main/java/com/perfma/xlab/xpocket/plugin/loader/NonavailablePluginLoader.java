@@ -5,14 +5,20 @@ import com.perfma.xlab.xpocket.plugin.context.FrameworkPluginContext;
 
 import java.util.Set;
 import java.util.TreeSet;
-import com.perfma.xlab.xpocket.spi.context.PluginBaseInfo;
 
 /**
  * @author gongyu <yin.tong@perfma.com>
  */
 public class NonavailablePluginLoader implements PluginLoader {
 
+    private static final String NAME = "N/A";
+    
     private static final Set<FrameworkPluginContext> emptySet = new TreeSet<>();
+
+    @Override
+    public String name() {
+        return NAME;
+    }
 
     @Override
     public boolean loadPlugins(String resouceName) {

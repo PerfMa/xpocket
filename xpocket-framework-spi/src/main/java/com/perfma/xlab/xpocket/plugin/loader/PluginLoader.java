@@ -1,6 +1,7 @@
 package com.perfma.xlab.xpocket.plugin.loader;
 
 
+import com.perfma.xlab.xpocket.plugin.base.NamedObject;
 import com.perfma.xlab.xpocket.plugin.context.FrameworkPluginContext;
 
 import java.util.Set;
@@ -8,7 +9,7 @@ import java.util.Set;
 /**
  * @author gongyu <yin.tong@perfma.com>
  */
-public interface PluginLoader {
+public interface PluginLoader extends NamedObject {
 
     /**
      * Load plugins and build it into FrameworkPluginContexts

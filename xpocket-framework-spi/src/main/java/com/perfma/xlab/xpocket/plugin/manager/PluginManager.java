@@ -3,9 +3,10 @@ package com.perfma.xlab.xpocket.plugin.manager;
 import com.perfma.xlab.xpocket.plugin.context.FrameworkPluginContext;
 import com.perfma.xlab.xpocket.plugin.loader.NonavailablePluginLoader;
 import com.perfma.xlab.xpocket.plugin.loader.PluginLoader;
+import com.perfma.xlab.xpocket.plugin.util.Constants;
+import com.perfma.xlab.xpocket.plugin.util.ServiceLoaderUtils;
 
-import java.util.Iterator;
-import java.util.ServiceLoader;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -16,15 +17,18 @@ public class PluginManager {
     private static final PluginLoader PLUGIN_LOADER;
 
     static {
-        ServiceLoader<PluginLoader> pluginLoaderLoader = ServiceLoader
-                .load(PluginLoader.class);
-        Iterator<PluginLoader> it = pluginLoaderLoader.iterator();
-
-        if (it.hasNext()) {
-            PLUGIN_LOADER = it.next();
+        Map<String,PluginLoader> loaders = ServiceLoaderUtils
+                .loadServices(PluginLoader.class);
+        String run_mode = System.getProperty(Constants.RUN_MODE_KEY, 
+                Constants.DEFAULT_RUN_MODE).toUpperCase();
+        
+        if (loaders.containsKey(run_mode)) {
+            PLUGIN_LOADER = loaders.get(run_mode);
         } else {
-            PLUGIN_LOADER = new NonavailablePluginLoader();
+            PLUGIN_LOADER = loaders.getOrDefault(Constants.DEFAULT_RUN_MODE,
+                    new NonavailablePluginLoader());
         }
+
     }
 
     public static boolean loadPlugins(String resouceName) {

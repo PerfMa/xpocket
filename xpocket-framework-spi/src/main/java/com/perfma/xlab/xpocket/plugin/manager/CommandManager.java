@@ -2,10 +2,10 @@ package com.perfma.xlab.xpocket.plugin.manager;
 
 import com.perfma.xlab.xpocket.plugin.command.CommandLoader;
 import com.perfma.xlab.xpocket.plugin.context.FrameworkPluginContext;
+import com.perfma.xlab.xpocket.plugin.util.Constants;
+import com.perfma.xlab.xpocket.plugin.util.ServiceLoaderUtils;
 
-import java.util.Iterator;
 import java.util.Map;
-import java.util.ServiceLoader;
 import java.util.Set;
 
 /**
@@ -13,16 +13,20 @@ import java.util.Set;
  */
 public class CommandManager {
 
-    private static CommandLoader cmdLoader;
+    private static final CommandLoader cmdLoader;
 
     static {
-        ServiceLoader<CommandLoader> pluginLoaderLoader = ServiceLoader
-                .load(CommandLoader.class);
-        Iterator<CommandLoader> it = pluginLoaderLoader.iterator();
+        
+        Map<String,CommandLoader> loaders = ServiceLoaderUtils.loadServices(CommandLoader.class);
+        String run_mode = System.getProperty(Constants.RUN_MODE_KEY, Constants.DEFAULT_RUN_MODE).toUpperCase();
 
-        if (it.hasNext()) {
-            cmdLoader = it.next();
+        if (loaders.containsKey(run_mode)) {
+            cmdLoader = loaders.get(run_mode);
         } else {
+            cmdLoader = loaders.get(Constants.DEFAULT_RUN_MODE);
+        }
+        
+        if(cmdLoader == null) {
             throw new RuntimeException("There is no COMMAND implementation exists in environment!");
         }
     }

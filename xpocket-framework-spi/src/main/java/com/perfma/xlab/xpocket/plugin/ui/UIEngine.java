@@ -1,9 +1,11 @@
-package com.perfma.xlab.xpocket.ui;
+package com.perfma.xlab.xpocket.plugin.ui;
+
+import com.perfma.xlab.xpocket.plugin.base.NamedObject;
 
 /**
  * @author gongyu <yin.tong@perfma.com>
  */
-public interface UIEngine {
+public interface UIEngine extends NamedObject {
 
     /**
      * 以某个形式的资源文件启动UI引擎
