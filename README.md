@@ -3,21 +3,43 @@
 
 ![XPocket](resourse/xpocket.jpg)
 
-`XPocket` 是PerfMa开源的一套工具整合方案，集合了多个优秀的开源工具，现阶段主要侧重性能领域，工具之间可以相互配合的进行工作，开发人员也可以快速的开发属于自己的插件。
+`XPocket` 是PerfMa开源的工具容器框架，用于集成现有的或新开发的工具，统一用户UI与交互体验；使工具开发者只需要关注核心逻辑的开发，并且使XPocket的用户可以以相同的交互体验使用大量不同的工具。
+目前XPocket生态已经实现了HSDB、JDB、JConsole、Perf、Arthas等多个优秀的开源工具的插件化集成，现阶段主要侧重性能领域。
+
+同时XPocket建立了一套不同工具间进行数据和行为交互的机制，使得XPocket容器中的多个工具可以实现管道式的协同工作。
 
 当你遇到以下类似问题时，`XPocket`可以帮助到你：
 1. 系统存在性能问题？
-2. 问题排查时一头雾水，不知道用什么工具？
-3. 查找工具，下载和安装都很浪费时间？
-4. 想自己快速开发一个实用的工具？
-5. 排查问题十分繁琐，想尽量简化排查方案以供后续使用？
+2. 问题排查时一头雾水，无从下手？
+3. 使用一个新的工具，下载、文档、安装完就下班了？
+4. 好不容易用起来，只因输出不合理就又要去找新工具？ 
+5. 有些自己实现的小工具散落各处？
+6. 排查过的问题记不记住全凭脑子？
 
 `XPocket`支持JDK 8+，支持Linux/Mac/Windows，采用命令行交互模式，提供丰富的 `Tab` 自动补全功能，支持管道操作。
 
+## 插件开源生态
+* [XPocket plugin HSDB](https://github.com/PerfMa/xpocket-plugin-hsdb)
+* [XPocket plugin JDB](https://github.com/PerfMa/xpocket-plugin-jdb)
+* [XPocket plugin JConsole](https://github.com/PerfMa/xpocket-plugin-jconsole)
+* [XPocket plugin Perf](https://github.com/PerfMa/xpocket-plugin-perf)
+* [XPocket plugin Arthas](https://github.com/PerfMa/xpocket-plugin-arthas)
+* [XPocket plugin VJMap](https://github.com/PerfMa/xpocket-plugin-vjmap)
 
-## 在线教程
+
+## XPocket在线教程
 
 * [基础教程](https://xpocket.perfma.com/tutorials/)
+
+## XPocket官方网站
+
+* [xpocket.perfma.com](https://xpocket.perfma.com/)
+
+## XPocket插件中心
+
+* [plugin.xpocket.perfma.com](https://plugin.xpocket.perfma.com/)
+
+
 
 ## 快速开始
 
