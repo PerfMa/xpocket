@@ -293,3 +293,6 @@ Doraemon是PerfMa开发的一款链接性能分析产品的体验工具，操作
 ## Tips
 - sa-jdi.jar 主要用于支持插件VJMap的正常使用（注：由于jdk8以上开始实施模块化，导致VJMap的运行机制不兼容）。
 - 框架扩展开发的包依赖: com.perfma.xlab:xpocket-framework-spi:2.0.0-RELEASE
+
+## 镜像仓库
+- [码云XPocket](https://gitee.com/perfma/xpocket)
