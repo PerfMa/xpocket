@@ -15,6 +15,7 @@
         <module>xpocket-plugin-spi</module>
         <module>xpocket-runtime</module>
         <module>xpocket-deploy</module>
+        <module>xpocket-sdk</module>
     </modules>
 
     <properties>
