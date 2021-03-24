@@ -9,15 +9,15 @@ import java.io.OutputStream;
  */
 public class ExecutionPipeLine {
 
-    private DefaultProcessDefinition header;
-    
-    private DefaultProcessDefinition tail;
-    
-    private final OutputStream finalOutput;
-    
-    private final Object lock = new Object();
-    
-    private volatile boolean isEnd = false;
+    protected DefaultProcessDefinition header;
+
+    protected DefaultProcessDefinition tail;
+
+    protected final OutputStream finalOutput;
+
+    protected final Object lock = new Object();
+
+    protected volatile boolean isEnd = false;
 
     public ExecutionPipeLine(OutputStream finalOutput) {
         this.finalOutput = finalOutput;

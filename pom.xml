@@ -16,6 +16,7 @@
         <module>xpocket-runtime</module>
         <module>xpocket-deploy</module>
         <module>xpocket-sdk</module>
+        <module>xpocket-bridge</module>
     </modules>
 
     <properties>

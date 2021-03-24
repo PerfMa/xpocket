@@ -12,19 +12,19 @@ import java.io.OutputStream;
  */
 public class DefaultProcessDefinition {
 
-    private final PluginBaseInfo context;
-    private final String cmd;
-    private final String[] args;
-    private boolean isEnd = true;
+    protected final PluginBaseInfo context;
+    protected final String cmd;
+    protected final String[] args;
+    protected boolean isEnd = true;
 
-    private boolean hasProcess = false;
-    private DefaultXPocketProcess currentProcess;
+    protected boolean hasProcess = false;
+    protected DefaultXPocketProcess currentProcess;
 
-    private DefaultProcessDefinition next;
+    protected DefaultProcessDefinition next;
 
-    private OutputStream outputStream;
+    protected OutputStream outputStream;
 
-    private ExecutionPipeLine pipeline;
+    protected ExecutionPipeLine pipeline;
 
     public DefaultProcessDefinition(PluginBaseInfo context, String cmd, String[] args) {
         this.context = context;
