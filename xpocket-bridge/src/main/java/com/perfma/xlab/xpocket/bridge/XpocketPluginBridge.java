@@ -9,6 +9,7 @@ import com.perfma.xlab.xpocket.framework.spi.impl.XPocketStatusContext;
 import com.perfma.xlab.xpocket.plugin.context.FrameworkPluginContext;
 import com.perfma.xlab.xpocket.plugin.manager.CommandManager;
 import com.perfma.xlab.xpocket.plugin.manager.PluginManager;
+import com.perfma.xlab.xpocket.spi.process.XPocketProcess;
 import com.perfma.xlab.xpocket.utils.XPocketConstants;
 
 /**
@@ -19,6 +20,8 @@ public class XpocketPluginBridge {
 
     private static DefaultProcessInfo processInfo;
 
+    private static FrameworkPluginContext frameworkPluginContext;
+
     public static StringBuffer resultCache = new StringBuffer();
 
     /**
@@ -27,9 +30,9 @@ public class XpocketPluginBridge {
      * @param args
      * @param currentXpocketProcess
      */
-    public static Result invoke(String command, String[] args, DefaultXPocketProcess currentXpocketProcess) {
+    public static Result invoke(String command, String[] args, XPocketProcess currentXpocketProcess) {
         //确定目标插件的PluginContext，包装参数信息为DefaultProcessInfo
-        FrameworkPluginContext frameworkPluginContext = determineProcessInfo(command, args, currentXpocketProcess);
+        frameworkPluginContext = determineProcessInfo(command, args, currentXpocketProcess);
         if (frameworkPluginContext == null) {
             return Result.buildFail("FrameworkPluginContext Is Empty");
         }
@@ -46,12 +49,18 @@ public class XpocketPluginBridge {
         } catch (Throwable throwable) {
             errorMsg = throwable.getMessage();
         } finally {
-            //完成调用，调用插件的关闭操作
-            XPocketStatusContext.switchOff(frameworkPluginContext,currentXpocketProcess);
             //重置返回结果缓存
             resultCache.setLength(0);
         }
         return Result.buildFail(errorMsg);
+    }
+
+    /**
+     * 插件关闭，这里交给用户自定义调用，因为某些插件的detach等操作放在其中，如果提前关闭，会影响后续调用，为保证功能正常，用户需要自行调用
+     * @param currentXpocketProcess
+     */
+    public static void switchOff(XPocketProcess currentXpocketProcess) {
+        XPocketStatusContext.switchOff(frameworkPluginContext,currentXpocketProcess);
     }
 
     /**
@@ -61,14 +70,12 @@ public class XpocketPluginBridge {
      * @param currentXpocketProcess 当前XpocketProcess
      * @return
      */
-    private static FrameworkPluginContext determineProcessInfo(String command, String[] args, DefaultXPocketProcess currentXpocketProcess) {
+    private static FrameworkPluginContext determineProcessInfo(String command, String[] args, XPocketProcess currentXpocketProcess) {
         FrameworkPluginContext pluginContext = (FrameworkPluginContext) XPocketStatusContext.instance.currentPlugin();
         if (pluginContext == null) {
             pluginContext = PluginManager.getPlugin(XPocketConstants.SYSTEM_PLUGIN_NAME, XPocketConstants.SYSTEM_PLUGIN_NS);
         }
         DefaultProcessInfo info = new DefaultProcessInfo();
-        info.setOutput(currentXpocketProcess.getOutputStream());
-
         int index = command.indexOf(".");
         FrameworkPluginContext selected = null;
         String selectedCmd = command;
