@@ -4,7 +4,6 @@ import com.perfma.xlab.xpocket.bridge.dto.Result;
 import com.perfma.xlab.xpocket.bridge.execution.ExecutionEngineHolder;
 import com.perfma.xlab.xpocket.framework.spi.execution.pipeline.DefaultNode;
 import com.perfma.xlab.xpocket.framework.spi.execution.pipeline.DefaultProcessInfo;
-import com.perfma.xlab.xpocket.framework.spi.execution.pipeline.DefaultXPocketProcess;
 import com.perfma.xlab.xpocket.framework.spi.impl.XPocketStatusContext;
 import com.perfma.xlab.xpocket.plugin.context.FrameworkPluginContext;
 import com.perfma.xlab.xpocket.plugin.manager.CommandManager;
@@ -26,22 +25,26 @@ public class XpocketPluginBridge {
 
     /**
      * 插件间调用，只支持单插件调用，不支持管道符
+     * 注意，这里调用包括目标插件的init；switchOn；invoke，但不包括插件的switchOff，switchOff的操作由用户自己调用
      * @param command
      * @param args
      * @param currentXpocketProcess
      */
     public static Result invoke(String command, String[] args, XPocketProcess currentXpocketProcess) {
         //确定目标插件的PluginContext，包装参数信息为DefaultProcessInfo
-        frameworkPluginContext = determineProcessInfo(command, args, currentXpocketProcess);
-        if (frameworkPluginContext == null) {
+        FrameworkPluginContext currentFrameworkPluginContext = determineProcessInfo(command, args, currentXpocketProcess);
+        if (currentFrameworkPluginContext == null) {
             return Result.buildFail("FrameworkPluginContext Is Empty");
         }
         String errorMsg;
         try {
-            //初始化插件
-            frameworkPluginContext.init(currentXpocketProcess);
-            //开启插件，资源准备等
-            XPocketStatusContext.switchOn(frameworkPluginContext,currentXpocketProcess);
+            if (currentFrameworkPluginContext != frameworkPluginContext) {
+                //初始化插件
+                frameworkPluginContext.init(currentXpocketProcess);
+                //开启插件，资源准备等
+                XPocketStatusContext.switchOn(XpocketPluginBridge.frameworkPluginContext,currentXpocketProcess);
+                frameworkPluginContext = currentFrameworkPluginContext;
+            }
             //命令调用
             ExecutionEngineHolder.getExecutionEgine().invoke(processInfo);
             //构建返回值
