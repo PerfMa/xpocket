@@ -40,9 +40,9 @@ public class XpocketPluginBridge {
         try {
             if (currentFrameworkPluginContext != frameworkPluginContext) {
                 //初始化插件
-                frameworkPluginContext.init(currentXpocketProcess);
+                currentFrameworkPluginContext.init(currentXpocketProcess);
                 //开启插件，资源准备等
-                XPocketStatusContext.switchOn(XpocketPluginBridge.frameworkPluginContext,currentXpocketProcess);
+                XPocketStatusContext.switchOn(currentFrameworkPluginContext,currentXpocketProcess);
                 frameworkPluginContext = currentFrameworkPluginContext;
             }
             //命令调用
