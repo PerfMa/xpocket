@@ -1,5 +1,6 @@
 package com.perfma.xlab.xpocket.framework.spi.execution.pipeline;
 
+import com.perfma.xlab.xpocket.context.ExecuteContextWrapper;
 import com.perfma.xlab.xpocket.plugin.execution.Node;
 import java.io.OutputStream;
 
@@ -14,6 +15,8 @@ public class ExecutionPipeLine {
     private DefaultProcessDefinition tail;
     
     private final OutputStream finalOutput;
+
+    private final ExecuteContextWrapper executeContextWrapper;
     
     private final Object lock = new Object();
     
@@ -21,6 +24,7 @@ public class ExecutionPipeLine {
 
     public ExecutionPipeLine(OutputStream finalOutput) {
         this.finalOutput = finalOutput;
+        this.executeContextWrapper = new ExecuteContextWrapper();
     }
     
     public void appendProcess(Node node) {
@@ -34,7 +38,7 @@ public class ExecutionPipeLine {
             tail = def;
         } else {
             def.setDefaultEnd(false);
-            tail.setOutputStream(new XPocketProcessOutputStream(def));
+            tail.setOutputStream(new XPocketProcessOutputStream(def, executeContextWrapper));
             tail.setNext(def);
             tail.setPipeline(null);
             tail = def;
@@ -42,7 +46,7 @@ public class ExecutionPipeLine {
     }
     
     public void start() throws Throwable {
-        header.execute(null);
+        header.execute(null, executeContextWrapper);
         synchronized(lock) {
             if(!isEnd) {
                 lock.wait();

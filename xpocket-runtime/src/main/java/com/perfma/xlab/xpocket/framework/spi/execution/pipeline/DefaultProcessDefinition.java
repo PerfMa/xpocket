@@ -1,9 +1,11 @@
 package com.perfma.xlab.xpocket.framework.spi.execution.pipeline;
 
 import com.perfma.xlab.xpocket.command.impl.SysCommand;
+import com.perfma.xlab.xpocket.context.ExecuteContextWrapper;
 import com.perfma.xlab.xpocket.framework.spi.impl.XPocketStatusContext;
 import com.perfma.xlab.xpocket.spi.command.XPocketCommand;
 import com.perfma.xlab.xpocket.spi.context.PluginBaseInfo;
+import com.perfma.xlab.xpocket.utils.InternalVariableParse;
 
 import java.io.OutputStream;
 
@@ -51,24 +53,15 @@ public class DefaultProcessDefinition {
         this.pipeline = pipeline;
     }
 
-    public void execute(String input) throws Throwable {
-        String[] realArgs;
-        if (input == null || input.trim().isEmpty()) {
-            realArgs = args;
-        } else {
-            if (context.getCommand(cmd) != null && context.getCommand(cmd).isPiped()) {
-                realArgs = args;
-            } else {
-                realArgs = new String[args.length + 1];
-                realArgs[0] = input;
-                System.arraycopy(args, 0, realArgs, 1, args.length);
-            }
-        }
+    public void execute(String input, ExecuteContextWrapper executeContextWrapper) throws Throwable {
+
+        String[] realArgs = this.enableExecuteContext(input, executeContextWrapper, args);
 
         DefaultXPocketProcess process = new DefaultXPocketProcess(cmd, realArgs);
         process.setInput(input);
         process.setOutputStream(outputStream);
         process.setPdef(this);
+        process.setExecuteContext(executeContextWrapper.getExecuteContext());
         currentProcess = process;
         hasProcess = true;
         XPocketCommand command = context.getCommand(cmd);
@@ -77,6 +70,19 @@ public class DefaultProcessDefinition {
             command = SysCommand.getInstance();
         }
         command.invoke(process, XPocketStatusContext.instance);
+    }
+
+    private String[] enableExecuteContext(String zeroVar, ExecuteContextWrapper executeContextWrapper, String[] args){
+        executeContextWrapper.nextExecuteContext();
+        executeContextWrapper.replaceZero(zeroVar);
+        if(args == null || args.length == 0){
+            return new String[0];
+        }
+        String[] res = new String[args.length];
+        for(int i = 0; i < args.length; i ++){
+            res[i] = InternalVariableParse.parse(args[i], executeContextWrapper);
+        }
+        return res;
     }
 
     public void pipeEnd() {
