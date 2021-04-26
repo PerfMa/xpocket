@@ -1,6 +1,5 @@
 package com.perfma.xlab.xpocket.command.impl;
 
-import com.perfma.xlab.xpocket.console.EndOfInputException;
 import com.perfma.xlab.xpocket.spi.command.CommandInfo;
 import com.perfma.xlab.xpocket.spi.process.XPocketProcess;
 import org.jline.keymap.BindingReader;
@@ -13,9 +12,7 @@ import org.jline.utils.Display;
 import org.jline.utils.InfoCmp.Capability;
 import org.jline.utils.NonBlockingReader;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -25,24 +22,37 @@ import java.util.concurrent.locks.LockSupport;
  * @author xinxian
  * @create 2020-09-08 14:36
  **/
-@CommandInfo(name = "top", usage = "like linux top info", index = 2)
+@CommandInfo(name = "top", usage = "system command top", index = 2)
 public class TopCommand extends AbstractSystemCommand {
 
     private static final int MAC_HEAD = 12;
 
+    private static StringBuilder builder = new StringBuilder("Input command (control + c) to exit");
+    private static final int SPACE_SIZE = 530;
+
     @Override
     public void invoke(XPocketProcess process) {
-        display("top -b -n 1");
+        for(int i = 0; i < SPACE_SIZE; i ++){
+            builder.append(" ");
+        }
+        String cmd = process.getCmd();
+        StringBuilder builder = new StringBuilder(cmd);
+        if(process.getArgs() != null){
+            for(String s : process.getArgs()){
+                builder.append(" ").append(s);
+            }
+        }
+        display(builder.toString());
         process.end();
     }
 
     public void display(String cmd) {
         Terminal terminal = getReader().getTerminal();
         BindingReader bindingReader = new BindingReader(terminal.reader());
-        Size size = new Size();
-        size.copy(terminal.getSize());
 
         Attributes attr = terminal.enterRawMode();
+        Process p = null;
+        Display display = null;
         try {
             // Use alternate buffer
             if (!terminal.puts(Capability.enter_ca_mode)) {
@@ -52,15 +62,23 @@ public class TopCommand extends AbstractSystemCommand {
             terminal.puts(Capability.cursor_invisible);
             terminal.writer().flush();
 
-            Display display = new Display(terminal, true);
+            display = new Display(terminal, true);
             KeyMap<String> keys = new KeyMap<>();
             keys.bind("Quit", "q", "Q");
             String op = null;
+            p = Runtime.getRuntime().exec(cmd);
+
+
             do {
-                display.clear();
+                Size size = new Size();
+                size.copy(terminal.getSize());
                 display.resize(size.getRows(), size.getColumns());
-                List<AttributedString> lines = runNative(cmd);
-                display.update(lines, 0);
+
+                List<AttributedString> lines = runNative(p);
+                if(lines.size() > 0) {
+                    display.clear();
+                    display.update(lines, 0);
+                }
                 checkInterrupted();
                 LockSupport.parkNanos(TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS));
                 int ch = bindingReader.peekCharacter(20);
@@ -71,9 +89,15 @@ public class TopCommand extends AbstractSystemCommand {
                 }
             } while (!"Quit".equals(op));
 
-        } catch (EndOfInputException | InterruptedException ex) {
+        } catch (Exception ex) {
             //do nothing
         } finally {
+            if(display != null) {
+                display.clear();
+            }
+            if(p != null){
+                p.destroyForcibly();
+            }
             terminal.setAttributes(attr);
             if (!terminal.puts(Capability.exit_ca_mode)) {
                 terminal.puts(Capability.clear_screen);
@@ -84,30 +108,30 @@ public class TopCommand extends AbstractSystemCommand {
         }
     }
 
-    public List<AttributedString> runNative(String cmd) {
-        Process p = null;
+    public List<AttributedString> runNative(Process p) {
         List<AttributedString> lines = new ArrayList<>();
         try {
-            if (System.getProperty("os.name").toLowerCase().contains("linux")) {
-                p = Runtime.getRuntime().exec(cmd);
-            } else {
-                ProcessBuilder ps = new ProcessBuilder("top");
-                ps.redirectErrorStream(true);
-                p = ps.start();
-            }
             int i = 0;
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
+
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
                 String line;
-                while ((line = reader.readLine()) != null) {
-                    lines.add(new AttributedString(line));
-                    // TODO
-                    if (i++ == MAC_HEAD + 10) {
+                while((line = reader.readLine()) != null){
+                    if(line.startsWith("top") || line.startsWith("Processes")){
+                        lines.add(new AttributedString(line));
                         break;
                     }
                 }
-                lines.add(new AttributedString(""));
-                lines.add(new AttributedString(" Input command (control + c) to exit"));
-                p.destroyForcibly();
+                while ((line = reader.readLine()) != null) {
+                    if (i++ > MAC_HEAD + 12) {
+                        break;
+                    }
+                    lines.add(new AttributedString(line));
+
+                }
+                if(lines.size() > 0) {
+                    lines.add(new AttributedString(builder.toString()));
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
