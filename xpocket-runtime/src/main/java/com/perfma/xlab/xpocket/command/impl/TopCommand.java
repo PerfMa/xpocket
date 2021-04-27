@@ -37,6 +37,9 @@ public class TopCommand extends AbstractSystemCommand {
         }
         String cmd = process.getCmd();
         StringBuilder builder = new StringBuilder(cmd);
+        if(isLinux()){
+            builder.append(" -b");
+        }
         if(process.getArgs() != null){
             for(String s : process.getArgs()){
                 builder.append(" ").append(s);
@@ -117,7 +120,8 @@ public class TopCommand extends AbstractSystemCommand {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
                 String line;
                 while((line = reader.readLine()) != null){
-                    if(line.startsWith("top") || line.startsWith("Processes")){
+                    if(line.startsWith("top") || line.startsWith("Processes")
+                        || line.startsWith("  procps")){
                         lines.add(new AttributedString(line));
                         break;
                     }
