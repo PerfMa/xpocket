@@ -50,8 +50,7 @@ public class DefaultExecutionEngine extends DefaultNamedObject implements Execut
                 if (isEnd.get()) {
                     break;
                 }
-                final String input = reader.readLine();
-                pipeline.userInput(input);
+                reader.readLine();
             }
         } catch (UserInterruptException ex) {
             executeThread.interrupt();
