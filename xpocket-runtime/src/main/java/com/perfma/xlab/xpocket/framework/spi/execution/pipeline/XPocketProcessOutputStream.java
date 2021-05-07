@@ -1,5 +1,7 @@
 package com.perfma.xlab.xpocket.framework.spi.execution.pipeline;
 
+import com.perfma.xlab.xpocket.context.ExecuteContextWrapper;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -9,10 +11,12 @@ import java.io.OutputStream;
  */
 public class XPocketProcessOutputStream extends OutputStream {
 
-    private final DefaultProcessDefinition def;    
+    private final DefaultProcessDefinition def;
+    private final ExecuteContextWrapper executeContextWrapper;
 
-    public XPocketProcessOutputStream(DefaultProcessDefinition def) {
+    public XPocketProcessOutputStream(DefaultProcessDefinition def, ExecuteContextWrapper executeContextWrapper) {
         this.def = def;
+        this.executeContextWrapper = executeContextWrapper;
     }
     
     @Override
@@ -25,7 +29,7 @@ public class XPocketProcessOutputStream extends OutputStream {
         byte[] readyToWrite =  new byte[len];
         System.arraycopy(b, off, readyToWrite, 0, len);
         try {
-            def.execute(new String(readyToWrite));
+            def.execute(new String(readyToWrite), executeContextWrapper);
         } catch (Throwable ex) {
             def.end();
             throw new IOException(ex);
