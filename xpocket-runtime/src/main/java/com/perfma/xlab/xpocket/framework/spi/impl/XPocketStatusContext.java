@@ -54,6 +54,21 @@ public class XPocketStatusContext implements SessionContext {
         }
     }
 
+    public static void switchOn(FrameworkPluginContext context,XPocketProcess process) {
+        final XPocketStatusContext xPocketStatusContext = sessions.get(context);
+        if(xPocketStatusContext != null && xPocketStatusContext.pluginContext.getPlugin(process) != null) {
+            context.getPlugin(process).switchOn(xPocketStatusContext);
+        }
+    }
+
+    public static void switchOff(FrameworkPluginContext context, XPocketProcess process) {
+        final XPocketStatusContext xPocketStatusContext = sessions.get(context);
+        if(xPocketStatusContext != null && xPocketStatusContext.pluginContext.getPlugin(process) != null) {
+            context.getPlugin(process).switchOff(xPocketStatusContext);
+        }
+    }
+
+
     public String line() {
         String start = Ansi.ansi().fg(Ansi.Color.RED).a("XPocket [").reset().toString();
         String colon = Ansi.ansi().fg(Ansi.Color.RED).a(": ").reset().toString();

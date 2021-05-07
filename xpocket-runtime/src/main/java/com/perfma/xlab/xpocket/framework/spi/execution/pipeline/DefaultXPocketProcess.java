@@ -17,14 +17,14 @@ import java.util.regex.Pattern;
  */
 public class DefaultXPocketProcess implements XPocketProcess {
 
-    private final Pattern ansiRemovePattern = Pattern.compile("(@\\|\\w* )|( ?\\|@)");
-    private final String cmd;
-    private final String[] args;
-    private final Set<XPocketProcessAction> actions = new HashSet<>();
-    private String input;
-    private OutputStream outputStream;
-    private DefaultProcessDefinition pdef;
-    private Output output;
+    protected final Pattern ansiRemovePattern = Pattern.compile("(@\\|\\w* )|( ?\\|@)");
+    protected final String cmd;
+    protected final String[] args;
+    protected final Set<XPocketProcessAction> actions = new HashSet<>();
+    protected String input;
+    protected OutputStream outputStream;
+    protected DefaultProcessDefinition pdef;
+    protected Output output;
 
     private ExecuteContext executeContext;
 
