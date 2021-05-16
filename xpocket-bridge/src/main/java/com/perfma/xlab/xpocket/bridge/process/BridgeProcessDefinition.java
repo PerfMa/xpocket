@@ -1,6 +1,7 @@
 package com.perfma.xlab.xpocket.bridge.process;
 
 import com.perfma.xlab.xpocket.command.impl.SysCommand;
+import com.perfma.xlab.xpocket.context.ExecuteContextWrapper;
 import com.perfma.xlab.xpocket.framework.spi.execution.pipeline.DefaultProcessDefinition;
 import com.perfma.xlab.xpocket.framework.spi.impl.XPocketStatusContext;
 import com.perfma.xlab.xpocket.spi.command.XPocketCommand;
@@ -18,7 +19,7 @@ public class BridgeProcessDefinition extends DefaultProcessDefinition  {
     }
 
     @Override
-    public void execute(String input) throws Throwable {
+    public void execute(String input,ExecuteContextWrapper executeContextWrapper) throws Throwable {
         String[] realArgs;
         if (input == null || input.trim().isEmpty()) {
             realArgs = args;

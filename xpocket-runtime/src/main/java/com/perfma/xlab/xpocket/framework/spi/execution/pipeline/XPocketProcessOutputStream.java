@@ -14,6 +14,10 @@ public class XPocketProcessOutputStream extends OutputStream {
     private final DefaultProcessDefinition def;
     private final ExecuteContextWrapper executeContextWrapper;
 
+    public XPocketProcessOutputStream(DefaultProcessDefinition def) {
+        this(def,null);
+    }
+    
     public XPocketProcessOutputStream(DefaultProcessDefinition def, ExecuteContextWrapper executeContextWrapper) {
         this.def = def;
         this.executeContextWrapper = executeContextWrapper;
