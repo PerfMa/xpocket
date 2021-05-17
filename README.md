@@ -3,7 +3,7 @@
 
 ![XPocket](resourse/xpocket.jpg)
 
-`XPocket` 是PerfMa开源的工具容器框架，用于集成现有的或新开发的工具，统一用户UI与交互体验；使工具开发者只需要关注核心逻辑的开发，并且使XPocket的用户可以以相同的交互体验使用大量不同的工具。
+`XPocket` 是PerfMa为终结性能问题而生的开源的插件容器，它是性能领域的乐高，将定位或者解决各种性能问题的常见的Linux命令，JDK工具，知名性能工具等适配成各种XPocket插件，并让它们可以相互联动一键解决特定的性能问题。 目前XPocket插件生态已经实现了HSDB、JDB、JConsole、Perf、Arthas等多个优秀的开源性能工具的插件化集成。
 目前XPocket生态已经实现了HSDB、JDB、JConsole、Perf、Arthas等多个优秀的开源工具的插件化集成，现阶段主要侧重性能领域。
 
 同时XPocket建立了一套不同工具间进行数据和行为交互的机制，使得XPocket容器中的多个工具可以实现管道式的协同工作。
