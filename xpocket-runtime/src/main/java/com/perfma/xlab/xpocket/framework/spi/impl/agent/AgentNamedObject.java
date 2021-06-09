@@ -8,7 +8,7 @@ import com.perfma.xlab.xpocket.plugin.base.NamedObject;
  */
 public class AgentNamedObject implements NamedObject  {
 
-    private static final String NAME = "AGENT";
+    public static final String NAME = "AGENT";
 
     @Override
     public String name() {

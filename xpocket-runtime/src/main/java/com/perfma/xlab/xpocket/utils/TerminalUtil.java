@@ -17,12 +17,6 @@ public class TerminalUtil {
 
     public static String lineSeparator = System.getProperty("line.separator");
 
-    public static final Output OUTPUT = new Output(System.out, true);
-
-    public static void println(String input) {
-        OUTPUT.println(input);
-    }
-
     public static void printHeader(XPocketProcess process, DefaultProcessInfo info) {
         process.output(TerminalUtil.lineSeparator);
         process.output("--------------------------------------------------------------------");
@@ -90,11 +84,18 @@ public class TerminalUtil {
 
         for (CommandBaseInfo h : context.getCommandContexts()) {
             if (h.instance().isAvailableNow(h.name())) {
-                StringBuilder sb = new StringBuilder(" @|green  ").append(h.name()).append(" |@").append("  ");
-                while (sb.length() < 40) {
-                    sb.append(' ');
+                StringBuilder sb = new StringBuilder("  @|green ").append(fillSpace(h.name(),28)).append(" |@").append("  ");
+                
+                String[] usages = h.usage().split("\n");
+                sb.append("@|white ").append(usages[0]).append(" |@");
+                sb.append(TerminalUtil.lineSeparator);
+                
+                for(int i=1;i<usages.length;i++) {
+                    sb.append(fillSpace("",33));
+                    sb.append("@|white ").append(usages[i]).append(" |@");
+                    sb.append(TerminalUtil.lineSeparator);
                 }
-                sb.append("@|white    ").append(h.usage()).append(" |@");
+
                 process.output(sb.toString());
             }
         }
@@ -127,4 +128,5 @@ public class TerminalUtil {
     public static String readLine(LineReaderImpl reader, String prompt) {
         return reader.readLine(prompt);
     }
+    
 }

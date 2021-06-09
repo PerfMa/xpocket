@@ -3,6 +3,7 @@ package com.perfma.xlab.xpocket.plugin.manager;
 import com.perfma.xlab.xpocket.plugin.ui.UIEngine;
 import com.perfma.xlab.xpocket.plugin.util.Constants;
 import com.perfma.xlab.xpocket.plugin.util.ServiceLoaderUtils;
+import java.lang.instrument.Instrumentation;
 
 import java.util.Map;
 
@@ -28,8 +29,13 @@ public class MainUIManager {
         }
     }
 
+    @Deprecated
     public static void start(String def, String[] args) {
         coreUI.start(def, args);
+    }
+    
+    public static void start(String[] def, String[] args,Instrumentation inst) {
+        coreUI.start(def, args, inst);
     }
 
 }

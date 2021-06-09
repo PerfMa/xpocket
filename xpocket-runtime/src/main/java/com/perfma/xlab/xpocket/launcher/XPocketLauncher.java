@@ -34,7 +34,7 @@ public class XPocketLauncher {
         String[] argArrayForCore =  new String[argsForCore.size()];
         argsForCore.toArray(argArrayForCore);
         
-        MainUIManager.start("META-INF/xpocket.def", argArrayForCore);
+        MainUIManager.start(new String[]{"META-INF/xpocket.def"}, argArrayForCore,null);
     }
 
 }

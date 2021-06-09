@@ -34,6 +34,10 @@ public class PluginManager {
     public static boolean loadPlugins(String resouceName) {
         return PLUGIN_LOADER.loadPlugins(resouceName);
     }
+    
+    public static boolean loadPlugins(String resouceName,boolean isOnLoad) {
+        return PLUGIN_LOADER.loadPlugins(resouceName,isOnLoad);
+    }
 
     public static Set<FrameworkPluginContext> getAvailablePlugins() {
         return PLUGIN_LOADER.getAvailablePlugins();

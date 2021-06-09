@@ -73,12 +73,6 @@ public class DefaultUIEngine extends DefaultNamedObject implements UIEngine {
             systemProcess.output("\nBye.");
         } catch (Throwable ex) {
             ex.printStackTrace();
-        } finally {
-            try {
-                TerminalUtil.OUTPUT.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
         System.exit(0);
     }

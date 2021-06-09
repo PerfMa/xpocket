@@ -37,6 +37,13 @@ public interface XPocketPlugin {
      * print plugin`s own logo when switch in this plugin
      * @param process 
      */
+    @Deprecated
     void printLogo(XPocketProcess process);
+    
+    /**
+     * fetch logo string if the plugin has its own.
+     * @return  string object of plugin ascii art logo
+     */
+    String logo();
 
 }
