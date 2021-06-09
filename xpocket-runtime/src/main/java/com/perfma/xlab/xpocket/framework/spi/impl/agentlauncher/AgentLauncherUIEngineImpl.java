@@ -126,6 +126,13 @@ public class AgentLauncherUIEngineImpl extends AgentLauncherNamedObject implemen
                     while (!interrupted() && (ch = localInput.read()) != -1) {
                         remoteOutput.write(ch);
                         remoteOutput.flush();
+                        if(ch == 13) {
+                            remoteOutput.write(27);
+                            remoteOutput.write(91);
+                            remoteOutput.write(66);
+                            remoteOutput.flush();
+                        }
+                        
                     }
                 } catch (IOException e) {
                     // e.printStackTrace();
@@ -136,18 +143,23 @@ public class AgentLauncherUIEngineImpl extends AgentLauncherNamedObject implemen
         writer = new Thread() {
             @Override
             public void run() {
+                char[] cbuf = new char[1024];
                 try {
                     InputStreamReader reader = new InputStreamReader(remoteInput);
                     while (true) {
-                        int singleChar = reader.read();
-                        if (singleChar == -1) {
+                        int length = reader.read(cbuf);
+                        if (length == -1 || length == 0) {
                             break;
                         }
-                        localOutput.write(singleChar);
+                        localOutput.write(cbuf,0,length);
                         localOutput.flush();
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (Throwable e) {
+                    try {
+                        localOutput.write(e.getMessage());
+                    } catch (Throwable ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         };

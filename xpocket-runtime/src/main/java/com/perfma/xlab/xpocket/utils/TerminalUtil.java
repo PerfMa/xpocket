@@ -126,6 +126,7 @@ public class TerminalUtil {
     }
 
     public static String readLine(LineReaderImpl reader, String prompt) {
+        reader.flush();
         return reader.readLine(prompt);
     }
     

@@ -33,6 +33,7 @@ public class AgentUIEngineImpl extends AgentNamedObject implements UIEngine {
             }
             
             Terminal terminal = TerminalBuilder.builder()
+                    .type("ansi")
                     .nativeSignals(true)
                     .signalHandler(Terminal.SignalHandler.SIG_IGN)
                     .dumb(true).build();
