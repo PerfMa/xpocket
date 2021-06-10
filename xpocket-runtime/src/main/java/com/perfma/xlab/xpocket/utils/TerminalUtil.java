@@ -95,7 +95,11 @@ public class TerminalUtil {
 
         for (CommandBaseInfo h : context.getCommandContexts()) {
             if (h.instance().isAvailableNow(h.name())) {
-                StringBuilder sb = new StringBuilder("  @|green ").append(fillSpace(h.name(),28)).append(" |@").append("  ");
+                String shortName = h.shortName();
+                StringBuilder sb = new StringBuilder("  @|green ")
+                        .append(fillSpace(h.name() + 
+                                (shortName!=null ? ("," + shortName) : ""),28))
+                        .append(" |@").append("  ");
                 
                 String[] usages = h.usage().split("\n");
                 sb.append("@|white ").append(usages[0]).append(" |@");

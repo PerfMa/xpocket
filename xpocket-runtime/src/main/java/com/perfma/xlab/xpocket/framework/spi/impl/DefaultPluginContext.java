@@ -9,6 +9,7 @@ import com.perfma.xlab.xpocket.spi.process.XPocketProcess;
 import com.perfma.xlab.xpocket.utils.AsciiArtUtil;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * @author gongyu <yin.tong@perfma.com>
@@ -95,15 +96,25 @@ public class DefaultPluginContext implements FrameworkPluginContext {
         return commands.keySet();
     }
 
-    public void setCommands(Map<String, DefaultCommandContext> commands) {
-        this.commands = commands;
+    public void setCommands(Map<String, DefaultCommandContext> cmds) {
+        this.commands = new HashMap<>();
+        
+        for(Entry<String,DefaultCommandContext> e : cmds.entrySet()) {
+            String key = e.getKey();
+            DefaultCommandContext value = e.getValue();
+            this.commands.put(key,value);
+            if(value.shortName() != null) {
+                this.commands.put(value.shortName(),value);
+            }
+        }
+        
         this.orderedContexts = new TreeSet<>(
                 (CommandBaseInfo o1, CommandBaseInfo o2) -> {
                     return (o1.index() - o2.index() == 0)
                             ? -1
                             : (o1.index() - o2.index());
                 });
-        orderedContexts.addAll(commands.values());
+        orderedContexts.addAll(cmds.values());
     }
 
     @Override
@@ -213,4 +224,5 @@ public class DefaultPluginContext implements FrameworkPluginContext {
     public String getLogo() {
         return logo;
     }
+
 }

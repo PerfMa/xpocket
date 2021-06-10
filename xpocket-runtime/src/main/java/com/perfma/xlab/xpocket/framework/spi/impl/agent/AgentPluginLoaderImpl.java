@@ -180,7 +180,7 @@ public class AgentPluginLoaderImpl extends AgentNamedObject implements PluginLoa
                                                     CommandInfo.class);
                                     for (CommandInfo info : infos) {
                                         cmdMap.put(info.name(),
-                                                new DefaultCommandContext(info.name(),
+                                                new DefaultCommandContext(info.name(),info.shortName(),
                                                         info.usage(), info.index(), 
                                                         commandObject));
                                     }
@@ -196,7 +196,7 @@ public class AgentPluginLoaderImpl extends AgentNamedObject implements PluginLoa
 
                                         for (int i = 0; i < names.length; i++) {
                                             cmdMap.put(names[i],
-                                                    new DefaultCommandContext(names[i],
+                                                    new DefaultCommandContext(names[i],null,
                                                             usages.length > i
                                                                     ? usages[i]
                                                                     : "", 50, 

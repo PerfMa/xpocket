@@ -70,7 +70,7 @@ public class XPocketStatusContext implements SessionContext {
 
     public String line() {
         String start = Ansi.ansi().fg(Ansi.Color.RED).a("XPocket [").reset().toString();
-        String colon = Ansi.ansi().fg(Ansi.Color.RED).a(": ").reset().toString();
+        String colon = Ansi.ansi().fg(Ansi.Color.RED).a(" : ").reset().toString();
         String end = Ansi.ansi().fg(Ansi.Color.RED).a("] > ").reset().toString();
         StringBuilder sb = new StringBuilder();
         sb.append(start);

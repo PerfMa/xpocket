@@ -19,6 +19,8 @@ public @interface CommandInfo {
 
     String name();
     
+    String shortName() default "";
+    
     String usage() default "";
     
     PluginType type() default PluginType.ALL;

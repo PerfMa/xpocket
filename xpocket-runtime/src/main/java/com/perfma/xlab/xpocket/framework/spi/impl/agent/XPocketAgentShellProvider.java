@@ -294,7 +294,7 @@ public class XPocketAgentShellProvider implements ShellProvider {
                         .getAnnotationsByType(CommandInfo.class);
                 for (CommandInfo info : infos) {
                     cmdMap.put(info.name(),
-                            new DefaultCommandContext(info.name(), info.usage(), info.index(),
+                            new DefaultCommandContext(info.name(),info.shortName(), info.usage(), info.index(),
                                     commandObject));
                 }
             } catch (Throwable ex) {
