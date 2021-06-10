@@ -15,8 +15,15 @@ import org.jline.reader.impl.LineReaderImpl;
 public class TerminalUtil {
 
     public static String lineSeparator = System.getProperty("line.separator");
+    
+    private static final boolean ONLY_AGENT = Boolean.valueOf(System.getProperty("XPOCKET_ONLY_AGENT"));
 
     public static void printHeader(XPocketProcess process, DefaultProcessInfo info) {
+        
+        if(ONLY_AGENT) {
+            return;
+        }
+        
         process.output(TerminalUtil.lineSeparator);
         process.output("--------------------------------------------------------------------");
 
@@ -45,6 +52,11 @@ public class TerminalUtil {
     }
 
     public static void printTail(XPocketProcess process, DefaultProcessInfo info) {
+        
+        if(ONLY_AGENT) {
+            return;
+        }
+        
         process.output(" " + TerminalUtil.lineSeparator);
         if (info != null && info.nodes().size() > 0) {
             Node lastNode = info.nodes().get(info.nodes().size() - 1);

@@ -23,6 +23,8 @@ import org.apache.commons.net.telnet.TelnetClient;
  */
 public class AgentLauncherUIEngineImpl extends AgentLauncherNamedObject implements UIEngine {
 
+    private static final String OS_NAME = System.getProperty("os.name");
+    
     private static final String XPOCKET_HOME = System.getProperty("XPOCKET_HOME");
 
     private static final String XPOCKET_PLUGIN_PATH = System.getProperty("XPOCKET_PLUGIN_PATH");
@@ -30,9 +32,18 @@ public class AgentLauncherUIEngineImpl extends AgentLauncherNamedObject implemen
     private static final String XPOCKET_CONFIG_PATH = System.getProperty("XPOCKET_CONFIG_PATH");
 
     private static final String XPOCKET_AGENT_JAR = "xpocket-agent-" + XPocketConstants.VERSION + ".jar";
+    
+    private static int[] triggle = new int[]{27,79,66};
 
     private static final int DEFALUT_PORT = 9527;
 
+    static {
+        //windows
+        if(OS_NAME.toLowerCase().contains("win")) {
+            triggle[1] = 91;
+        }
+    }
+    
     @Override
     public void start(String[] def, String[] args, Instrumentation inst) {
 
@@ -109,11 +120,11 @@ public class AgentLauncherUIEngineImpl extends AgentLauncherNamedObject implemen
             System.exit(1);
         }
 
-        readWrite(telnet.getInputStream(),telnet.getOutputStream(),
+        readWrite(telnet, telnet.getInputStream(),telnet.getOutputStream(),
                 consoleReader.getInput(),consoleReader.getOutput());
     }
 
-    public static final void readWrite(final InputStream remoteInput, final OutputStream remoteOutput,
+    public static final void readWrite(TelnetClient telnet, final InputStream remoteInput, final OutputStream remoteOutput,
             final InputStream localInput, final Writer localOutput) {
         Thread reader, writer;
 
@@ -127,9 +138,9 @@ public class AgentLauncherUIEngineImpl extends AgentLauncherNamedObject implemen
                         remoteOutput.write(ch);
                         remoteOutput.flush();
                         if(ch == 13) {
-                            remoteOutput.write(27);
-                            remoteOutput.write(91);
-                            remoteOutput.write(66);
+                            remoteOutput.write(triggle[0]);
+                            remoteOutput.write(triggle[1]);
+                            remoteOutput.write(triggle[2]);
                             remoteOutput.flush();
                         }
                         
