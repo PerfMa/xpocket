@@ -132,8 +132,10 @@ public class Telnet {
                                 telnetIO.flush();
                             }
                         });
+                        String type = getConnectionData().getNegotiatedTerminalType().toLowerCase();
+                        System.out.println("TELNET TERM : " + type);
                         Terminal terminal = TerminalBuilder.builder()
-                                .type("ansi")
+                                .type(type)
                                 .streams(in, out)
                                 .system(false)
                                 .name("telnet")
@@ -142,7 +144,6 @@ public class Telnet {
                         addConnectionListener(new ConnectionListener() {
                             @Override
                             public void connectionTerminalGeometryChanged(ConnectionEvent ce) {
-                                terminal.setSize(new Size(getConnectionData().getTerminalColumns(), getConnectionData().getTerminalRows()));
                                 terminal.raise(Signal.WINCH);
                             }
                         });
