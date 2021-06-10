@@ -133,17 +133,19 @@ public class Telnet {
                             }
                         });
                         String type = getConnectionData().getNegotiatedTerminalType().toLowerCase();
-                        System.out.println("TELNET TERM : " + type);
+                        System.out.println("TERM TYPE : " + type);
                         Terminal terminal = TerminalBuilder.builder()
                                 .type(type)
                                 .streams(in, out)
                                 .system(false)
                                 .name("telnet")
                                 .build();
+                        terminal.setSize(new Size(getConnectionData().getTerminalColumns(), getConnectionData().getTerminalRows()));
                         terminal.setAttributes(Telnet.this.terminal.getAttributes());
                         addConnectionListener(new ConnectionListener() {
                             @Override
                             public void connectionTerminalGeometryChanged(ConnectionEvent ce) {
+                                terminal.setSize(new Size(getConnectionData().getTerminalColumns(), getConnectionData().getTerminalRows()));
                                 terminal.raise(Signal.WINCH);
                             }
                         });

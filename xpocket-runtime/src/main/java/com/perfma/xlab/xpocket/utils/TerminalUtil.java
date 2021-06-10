@@ -1,6 +1,5 @@
 package com.perfma.xlab.xpocket.utils;
 
-import com.perfma.xlab.xpocket.console.Output;
 import com.perfma.xlab.xpocket.framework.spi.execution.pipeline.DefaultProcessInfo;
 import com.perfma.xlab.xpocket.framework.spi.impl.XPocketStatusContext;
 import com.perfma.xlab.xpocket.plugin.execution.Node;
@@ -126,7 +125,6 @@ public class TerminalUtil {
     }
 
     public static String readLine(LineReaderImpl reader, String prompt) {
-        reader.flush();
         return reader.readLine(prompt);
     }
     
