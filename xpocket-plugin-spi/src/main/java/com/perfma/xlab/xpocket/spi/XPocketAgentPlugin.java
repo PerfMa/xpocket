@@ -7,13 +7,8 @@ import java.lang.instrument.Instrumentation;
  * Abstract Definition for Plugin that attached on target JVM processor.
  * @author gongyu <yin.tong@perfma.com>
  */
-public abstract class XPocketAgentPlugin implements XPocketPlugin {
+public interface XPocketAgentPlugin extends XPocketPlugin {
 
-    public void init(XPocketProcess process,Instrumentation inst) {
-        doInit(inst);
-        init(process);
-    }
-
-    protected abstract void doInit(Instrumentation inst);
+    void init(XPocketProcess process,Instrumentation inst,boolean isOnLoad);
     
 }

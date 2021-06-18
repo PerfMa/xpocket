@@ -17,7 +17,24 @@ public interface PluginLoader extends NamedObject {
      * @param resouceName 如：META-INF/xpocket.def
      * @return
      */
-    boolean loadPlugins(String resouceName);
+    default boolean loadPlugins(String resouceName){
+        throw new UnsupportedOperationException("It`s default implementation "
+                + "for loadPlugins(String resouceName),what means your provider "
+                + "never implemented this interface. ");
+    }
+    
+        /**
+     * Load plugins and build it into FrameworkPluginContexts
+     *
+     * @param resouceName 如：META-INF/xpocket.def
+     * @param isOnLoad is onLoad or onAttach when agent mode
+     * @return
+     */
+    default boolean loadPlugins(String resouceName,boolean isOnLoad){
+        throw new UnsupportedOperationException("It`s default implementation "
+                + "for loadPlugins(String resouceName,boolean isOnLoad),what "
+                + "means your provider never implemented this interface. ");
+    }
 
     /**
      * Gets a list of available plug-ins

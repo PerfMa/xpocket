@@ -10,4 +10,8 @@ public class Constants {
     
     public static final String RUN_MODE_KEY = "run_mode";
     
+    public static final String AGENT_MODE_KEY = "agent_mode";
+    
+    
+    
 }

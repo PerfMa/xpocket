@@ -73,12 +73,6 @@ public class DefaultUIEngine extends DefaultNamedObject implements UIEngine {
             systemProcess.output("\nBye.");
         } catch (Throwable ex) {
             ex.printStackTrace();
-        } finally {
-            try {
-                TerminalUtil.OUTPUT.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
         System.exit(0);
     }
@@ -267,7 +261,7 @@ public class DefaultUIEngine extends DefaultNamedObject implements UIEngine {
                         .getAnnotationsByType(CommandInfo.class);
                 for (CommandInfo info : infos) {
                     cmdMap.put(info.name(),
-                            new DefaultCommandContext(info.name(), info.usage(), info.index(),
+                            new DefaultCommandContext(info.name(),info.shortName(), info.usage(), info.index(),
                                     commandObject));
                 }
             } catch (Throwable ex) {
@@ -305,6 +299,7 @@ public class DefaultUIEngine extends DefaultNamedObject implements UIEngine {
         paramsCompleter.registry(XPocketConstants.SYSTEM_PLUGIN_NAME + ".help@" + XPocketConstants.SYSTEM_PLUGIN_NS.toUpperCase(), helpCompleter);
         paramsCompleter.registry(XPocketConstants.SYSTEM_PLUGIN_NAME + ".help", helpCompleter);
         paramsCompleter.registry("help", helpCompleter);
+        paramsCompleter.registry("h", helpCompleter);
 
     }
 

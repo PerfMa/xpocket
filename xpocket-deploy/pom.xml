@@ -23,6 +23,10 @@
             <groupId>com.perfma.xlab</groupId>
             <artifactId>xpocket-runtime</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.perfma.xlab</groupId>
+            <artifactId>xpocket-agent</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

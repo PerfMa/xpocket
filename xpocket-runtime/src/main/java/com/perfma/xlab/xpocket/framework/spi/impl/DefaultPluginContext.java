@@ -6,14 +6,18 @@ import com.perfma.xlab.xpocket.spi.command.XPocketCommand;
 import com.perfma.xlab.xpocket.spi.context.CommandBaseInfo;
 import com.perfma.xlab.xpocket.spi.context.PluginType;
 import com.perfma.xlab.xpocket.spi.process.XPocketProcess;
+import com.perfma.xlab.xpocket.utils.AsciiArtUtil;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * @author gongyu <yin.tong@perfma.com>
  */
 public class DefaultPluginContext implements FrameworkPluginContext {
 
+    private String logo;
+    
     private String name;
 
     private String namespace;
@@ -37,7 +41,7 @@ public class DefaultPluginContext implements FrameworkPluginContext {
     private XPocketPlugin plugin;
 
     private boolean inited = false;
-
+    
     @Override
     public String getDescription() {
         return description;
@@ -92,15 +96,25 @@ public class DefaultPluginContext implements FrameworkPluginContext {
         return commands.keySet();
     }
 
-    public void setCommands(Map<String, DefaultCommandContext> commands) {
-        this.commands = commands;
+    public void setCommands(Map<String, DefaultCommandContext> cmds) {
+        this.commands = new HashMap<>();
+        
+        for(Entry<String,DefaultCommandContext> e : cmds.entrySet()) {
+            String key = e.getKey();
+            DefaultCommandContext value = e.getValue();
+            this.commands.put(key,value);
+            if(value.shortName() != null) {
+                this.commands.put(value.shortName(),value);
+            }
+        }
+        
         this.orderedContexts = new TreeSet<>(
                 (CommandBaseInfo o1, CommandBaseInfo o2) -> {
                     return (o1.index() - o2.index() == 0)
                             ? -1
                             : (o1.index() - o2.index());
                 });
-        orderedContexts.addAll(commands.values());
+        orderedContexts.addAll(cmds.values());
     }
 
     @Override
@@ -137,7 +151,18 @@ public class DefaultPluginContext implements FrameworkPluginContext {
             try {
                 plugin = (XPocketPlugin) pluginClass.getDeclaredConstructor().newInstance();
                 plugin.init(process);
-
+                logo = plugin.logo();
+                
+                if(logo == null) {
+                    StringBuilder text = new StringBuilder(name.length() * 2);
+                    
+                    for(char c : name.toUpperCase().toCharArray()) {
+                        text.append(c).append(" ");
+                    }
+                    
+                    logo = AsciiArtUtil.text2AsciiArt(text.toString());
+                }
+                
                 for (DefaultCommandContext ctx : commands.values()) {
                     ctx.instance().init(plugin);
                 }
@@ -190,4 +215,14 @@ public class DefaultPluginContext implements FrameworkPluginContext {
     public String getPluginInfo() {
         return pluginInfo;
     }
+
+    public void setLogo(String logo) {
+        this.logo = logo;
+    }
+    
+    @Override
+    public String getLogo() {
+        return logo;
+    }
+
 }

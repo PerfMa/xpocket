@@ -1,6 +1,7 @@
 package com.perfma.xlab.xpocket.utils;
 
 import com.perfma.xlab.xpocket.context.ExecuteContextWrapper;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author: ZQF
@@ -13,7 +14,7 @@ public class InternalVariableParse {
     private static final String INTERNAL_VAR_SUFFIX = "}";
     private static final String INTERNAL_VAR_SPLIT = "\\.";
 
-    public static String parse(String str, ExecuteContextWrapper executeContextWrapper){
+    public static String parse(String str, ExecuteContextWrapper executeContextWrapper,AtomicBoolean flag){
         int index = 0;
         int current = 0;
         StringBuilder builder = new StringBuilder();
@@ -42,6 +43,7 @@ public class InternalVariableParse {
                     String res = executeContextWrapper.get(row, column);
                     if(res != null){
                         replace = true;
+                        flag.set(true);
                         current = last + 1;
                         builder.append(res);
                     }
@@ -71,7 +73,7 @@ public class InternalVariableParse {
         ExecuteContextWrapper executeContextWrapper = new ExecuteContextWrapper();
         executeContextWrapper.nextExecuteContext();
         executeContextWrapper.addInternalVar("REPLACE");
-        System.out.println(parse("dfsd${1.0}sdfs${2.0},${}", executeContextWrapper));
+        System.out.println(parse("dfsd${1.0}sdfs${2.0},${}", executeContextWrapper,new AtomicBoolean(false)));
         System.out.println(executeContextWrapper);
     }
 

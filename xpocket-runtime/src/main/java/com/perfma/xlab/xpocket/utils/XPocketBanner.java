@@ -3,14 +3,15 @@ package com.perfma.xlab.xpocket.utils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.FileInputStream;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Map;
 
 
 
 public class XPocketBanner {
-
-    private static String LOGO_LOCATION = System.getProperty("config_dir") + "logo.txt";
+ 
+    private static String LOGO_LOCATION = System.getProperty("XPOCKET_CONFIG_PATH") + "logo.txt";
 
     private static String LOGO = "";
     
@@ -19,8 +20,8 @@ public class XPocketBanner {
 
     static {
         try {
-            String logoText = IOUtils.toString(new FileInputStream(LOGO_LOCATION));
-            String[] elements = logoText.split("\n");
+            String logoText = IOUtils.toString(new FileInputStream(LOGO_LOCATION),Charset.defaultCharset());
+            String[] elements = logoText.split(TerminalUtil.lineSeparator);
             int /*高度*/h = 5,/*字符数*/c = 7,/*宽度*/w = 8;
             StringBuilder logoBuilder = new StringBuilder(logoText.length());
             

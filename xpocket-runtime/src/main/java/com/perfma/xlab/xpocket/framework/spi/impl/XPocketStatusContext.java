@@ -11,10 +11,10 @@ import org.fusesource.jansi.Ansi;
 import com.perfma.xlab.xpocket.spi.context.PluginBaseInfo;
 import com.perfma.xlab.xpocket.spi.context.CommandBaseInfo;
 
-
 /**
  * @author: TuGai
- **/
+ *
+ */
 public class XPocketStatusContext implements SessionContext {
 
     public static volatile XPocketStatusContext instance;
@@ -34,51 +34,50 @@ public class XPocketStatusContext implements SessionContext {
     private XPocketStatusContext() {
     }
 
-    public static void open(FrameworkPluginContext context,XPocketProcess process) {
+    public static void open(FrameworkPluginContext context, XPocketProcess process) {
         if (!sessions.containsKey(context)) {
             XPocketStatusContext sessionContext = new XPocketStatusContext();
             sessionContext.pluginContext = context;
             sessions.putIfAbsent(context, sessionContext);
         }
-        
-        if(instance != null && instance.pluginContext.getPlugin(process) != null) {
+
+        if (instance != null && instance.pluginContext.getPlugin(process) != null) {
             instance.pluginContext.getPlugin(process).switchOff(instance);
         }
-        
+
         instance = sessions.get(context);
         instance.pluginContext.init(process);
-        if(instance != null && instance.pluginContext.getPlugin(process) != null) {
-            instance.pluginContext.getPlugin(process).printLogo(process);
-            process.output(TerminalUtil.lineSeparator);
+        process.output(instance.pluginContext.getLogo());
+        process.output(TerminalUtil.lineSeparator);
+        if (instance != null && instance.pluginContext.getPlugin(process) != null) {
             instance.pluginContext.getPlugin(process).switchOn(instance);
         }
     }
 
-    public static void switchOn(FrameworkPluginContext context,XPocketProcess process) {
+    public static void switchOn(FrameworkPluginContext context, XPocketProcess process) {
         final XPocketStatusContext xPocketStatusContext = sessions.get(context);
-        if(xPocketStatusContext != null && xPocketStatusContext.pluginContext.getPlugin(process) != null) {
+        if (xPocketStatusContext != null && xPocketStatusContext.pluginContext.getPlugin(process) != null) {
             context.getPlugin(process).switchOn(xPocketStatusContext);
         }
     }
 
     public static void switchOff(FrameworkPluginContext context, XPocketProcess process) {
         final XPocketStatusContext xPocketStatusContext = sessions.get(context);
-        if(xPocketStatusContext != null && xPocketStatusContext.pluginContext.getPlugin(process) != null) {
+        if (xPocketStatusContext != null && xPocketStatusContext.pluginContext.getPlugin(process) != null) {
             context.getPlugin(process).switchOff(xPocketStatusContext);
         }
     }
 
-
     public String line() {
         String start = Ansi.ansi().fg(Ansi.Color.RED).a("XPocket [").reset().toString();
-        String colon = Ansi.ansi().fg(Ansi.Color.RED).a(": ").reset().toString();
+        String colon = Ansi.ansi().fg(Ansi.Color.RED).a(" : ").reset().toString();
         String end = Ansi.ansi().fg(Ansi.Color.RED).a("] > ").reset().toString();
         StringBuilder sb = new StringBuilder();
         sb.append(start);
         if (pluginContext != null) {
             String name = pluginContext.getName();
             name = Ansi.ansi().fg(Ansi.Color.YELLOW).a(name).reset().toString();
-            sb.append(name); 
+            sb.append(name);
             if (pid >= 0) {
                 sb.append(colon).append(pid).append(end);
             } else {
