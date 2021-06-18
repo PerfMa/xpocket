@@ -102,6 +102,10 @@ public class JavaAgentCommandAdaptor extends AbstractXPocketCommand implements R
                 virtualMachine = VirtualMachine.attach(virtualMachineDescriptor);
             }
 
+            if(virtualMachine == null) {
+                return pid + " not found!";
+            }
+            
             String loadOption = "XPOCKET_HOME=%s;XPOCKET_PLUGIN_PATH=%s;XPOCKET_CONFIG_PATH=%s;port=%s;XPOCKET_ONLY_AGENT=true";
             loadOption = String.format(loadOption,
                     URLEncoder.encode(XPOCKET_HOME, "UTF-8"),

@@ -299,6 +299,7 @@ public class DefaultUIEngine extends DefaultNamedObject implements UIEngine {
         paramsCompleter.registry(XPocketConstants.SYSTEM_PLUGIN_NAME + ".help@" + XPocketConstants.SYSTEM_PLUGIN_NS.toUpperCase(), helpCompleter);
         paramsCompleter.registry(XPocketConstants.SYSTEM_PLUGIN_NAME + ".help", helpCompleter);
         paramsCompleter.registry("help", helpCompleter);
+        paramsCompleter.registry("h", helpCompleter);
 
     }
 

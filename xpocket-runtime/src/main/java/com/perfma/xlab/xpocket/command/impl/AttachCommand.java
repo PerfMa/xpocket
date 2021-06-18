@@ -18,10 +18,13 @@ public class AttachCommand extends AbstractSystemCommand {
         XPocketProcessTemplate.execute(process, 
                 (String cmd, String[] args) -> 
                 {
-                    process.output(String.valueOf(args.length));
-                    XPocketConstants.DEFAULT_ADAPTOR.attach(process, args[0]);
-                    return String.format("Attach to target process success : %s",
-                            args[0]);
+                    String errorInfo = XPocketConstants.DEFAULT_ADAPTOR.attach(process, args[0]);
+                    if("OK".equalsIgnoreCase(errorInfo)) {
+                        return String.format("Attach to target process success : %s",
+                                args[0]);
+                    } else {
+                        return String.format("ERROR : %s", errorInfo);
+                    }
                 });
     }
    

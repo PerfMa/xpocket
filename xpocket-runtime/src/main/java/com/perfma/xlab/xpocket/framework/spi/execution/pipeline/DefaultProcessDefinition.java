@@ -8,6 +8,7 @@ import com.perfma.xlab.xpocket.spi.context.PluginBaseInfo;
 import com.perfma.xlab.xpocket.utils.InternalVariableParse;
 
 import java.io.OutputStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author gongyu <yin.tong@perfma.com>
@@ -56,7 +57,6 @@ public class DefaultProcessDefinition {
     public void execute(String input, ExecuteContextWrapper executeContextWrapper) throws Throwable {
 
         String[] realArgs = this.enableExecuteContext(input, executeContextWrapper, args);
-
         DefaultXPocketProcess process = new DefaultXPocketProcess(cmd, realArgs);
         process.setInput(input);
         process.setOutputStream(outputStream);
@@ -72,15 +72,27 @@ public class DefaultProcessDefinition {
         command.invoke(process, XPocketStatusContext.instance);
     }
 
-    private String[] enableExecuteContext(String zeroVar, ExecuteContextWrapper executeContextWrapper, String[] args){
+    private String[] enableExecuteContext(String zeroVar, ExecuteContextWrapper executeContextWrapper, String[] args) {
         executeContextWrapper.nextExecuteContext();
         executeContextWrapper.replaceZero(zeroVar);
-        if(args == null || args.length == 0){
-            return new String[0];
+        
+        AtomicBoolean flag = new AtomicBoolean(false);
+        String[] res = new String[args == null ? 0 : args.length];
+        
+        if (args != null && args.length > 0) {
+            for (int i = 0; i < args.length; i++) {
+                res[i] = InternalVariableParse.parse(args[i], executeContextWrapper, flag);
+            }
         }
-        String[] res = new String[args.length];
-        for(int i = 0; i < args.length; i ++){
-            res[i] = InternalVariableParse.parse(args[i], executeContextWrapper);
+        
+        if (!flag.get()) {
+            if (zeroVar != null && !zeroVar.trim().isEmpty()) {
+                if (context.getCommand(cmd) == null || !context.getCommand(cmd).isPiped()) {
+                    res = new String[args.length + 1];
+                    res[0] = zeroVar;
+                    System.arraycopy(args, 0, res, 1, args.length);
+                }
+            }
         }
         return res;
     }
