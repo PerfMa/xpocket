@@ -1,6 +1,7 @@
 package com.perfma.xlab.xpocket.framework.spi.execution.pipeline;
 
 import com.perfma.xlab.xpocket.console.Output;
+import com.perfma.xlab.xpocket.spi.context.ExecuteContext;
 import com.perfma.xlab.xpocket.spi.process.XPocketProcess;
 import com.perfma.xlab.xpocket.spi.process.XPocketProcessAction;
 import com.perfma.xlab.xpocket.utils.TerminalUtil;
@@ -16,14 +17,16 @@ import java.util.regex.Pattern;
  */
 public class DefaultXPocketProcess implements XPocketProcess {
 
-    private final Pattern ansiRemovePattern = Pattern.compile("(@\\|\\w* )|( ?\\|@)");
-    private final String cmd;
-    private final String[] args;
-    private final Set<XPocketProcessAction> actions = new HashSet<>();
-    private String input;
-    private OutputStream outputStream;
-    private DefaultProcessDefinition pdef;
-    private Output output;
+    protected final Pattern ansiRemovePattern = Pattern.compile("(@\\|\\w* )|( ?\\|@)");
+    protected final String cmd;
+    protected final String[] args;
+    protected final Set<XPocketProcessAction> actions = new HashSet<>();
+    protected String input;
+    protected OutputStream outputStream;
+    protected DefaultProcessDefinition pdef;
+    protected Output output;
+
+    private ExecuteContext executeContext;
 
     public DefaultXPocketProcess(String cmd, String[] args) {
         this.cmd = cmd;
@@ -114,6 +117,10 @@ public class DefaultXPocketProcess implements XPocketProcess {
         this.pdef = pdef;
     }
 
+    public void setExecuteContext(ExecuteContext executeContext){
+        this.executeContext = executeContext;
+    }
+
     @Override
     public void register(XPocketProcessAction action) {
         actions.add(action);
@@ -122,6 +129,11 @@ public class DefaultXPocketProcess implements XPocketProcess {
     @Override
     public void unregister(XPocketProcessAction action) {
         actions.remove(action);
+    }
+
+    @Override
+    public ExecuteContext getExecuteContext() {
+        return this.executeContext;
     }
 
     public void interrupt() {

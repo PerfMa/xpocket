@@ -23,5 +23,10 @@ public abstract class AbstractXPocketPlugin implements XPocketPlugin {
 
     @Override
     public void printLogo(XPocketProcess process) {}
+
+    @Override
+    public String logo() {
+        return null;
+    }
    
 }

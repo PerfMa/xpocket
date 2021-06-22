@@ -100,4 +100,10 @@ public interface PluginBaseInfo {
      * @return
      */
     String getPluginInfo();
+    
+    /**
+     * get ascii logo of this plug-in
+     * @return 
+     */
+    String getLogo();
 }

@@ -68,6 +68,9 @@ public class SplitCommand extends AbstractSystemCommand {
         }
 
         String[] result = input.split(separator, limit);
+        for(String s : result){
+            process.getExecuteContext().addInternalVar(s);
+        }
         if (index >= 0 && result.length > index) {
             process.output(result[index]);
         }

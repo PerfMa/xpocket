@@ -5,6 +5,7 @@ import com.perfma.xlab.xpocket.plugin.loader.NonavailablePluginLoader;
 import com.perfma.xlab.xpocket.plugin.loader.PluginLoader;
 import com.perfma.xlab.xpocket.plugin.util.Constants;
 import com.perfma.xlab.xpocket.plugin.util.ServiceLoaderUtils;
+import java.lang.instrument.Instrumentation;
 
 import java.util.Map;
 import java.util.Set;
@@ -30,9 +31,14 @@ public class PluginManager {
         }
 
     }
-
+    
+    @Deprecated
     public static boolean loadPlugins(String resouceName) {
         return PLUGIN_LOADER.loadPlugins(resouceName);
+    }
+    
+    public static boolean loadPlugins(String resouceName,boolean isOnLoad,Instrumentation inst) {
+        return PLUGIN_LOADER.loadPlugins(resouceName,isOnLoad,inst);
     }
 
     public static Set<FrameworkPluginContext> getAvailablePlugins() {

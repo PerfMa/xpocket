@@ -7,7 +7,6 @@ import com.perfma.xlab.xpocket.spi.command.CommandInfo;
 import com.perfma.xlab.xpocket.utils.TerminalUtil;
 import com.perfma.xlab.xpocket.utils.XPocketConstants;
 import com.perfma.xlab.xpocket.spi.process.XPocketProcess;
-import com.perfma.xlab.xpocket.spi.context.PluginBaseInfo;
 
 /**
  * @author xinxian

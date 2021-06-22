@@ -13,6 +13,12 @@ public interface CommandBaseInfo {
      * @return
      */
     String name();
+    
+    /**
+     * short for command name
+     * @return 
+     */
+    String shortName();
 
     /**
      * command info

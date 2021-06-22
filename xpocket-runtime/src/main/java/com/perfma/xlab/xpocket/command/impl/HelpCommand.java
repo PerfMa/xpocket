@@ -13,7 +13,7 @@ import com.perfma.xlab.xpocket.spi.context.CommandBaseInfo;
  * @author xinxian
  * @create 2020-09-07 16:23
  */
-@CommandInfo(name = "help", usage = "command help info and you can use \"help <cmd>\" to see the detailed usage of the command")
+@CommandInfo(name = "help", shortName="h",usage = "command help info and you can use \"help <cmd>\" to see the detailed usage of the command")
 public class HelpCommand extends AbstractSystemCommand {
 
     public HelpCommand() {

@@ -1,5 +1,7 @@
 package com.perfma.xlab.xpocket.spi.process;
 
+import com.perfma.xlab.xpocket.spi.context.ExecuteContext;
+
 /**
  * @author gongyu <yin.tong@perfma.com>
  */
@@ -51,5 +53,12 @@ public interface XPocketProcess {
      * @param action
      */
     void unregister(XPocketProcessAction action);
+
+    /**
+     * Get ExecuteContext
+     *
+     * @return
+     */
+    ExecuteContext getExecuteContext();
 
 }

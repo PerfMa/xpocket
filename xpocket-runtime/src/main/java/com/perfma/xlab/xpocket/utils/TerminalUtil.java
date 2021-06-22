@@ -1,6 +1,5 @@
 package com.perfma.xlab.xpocket.utils;
 
-import com.perfma.xlab.xpocket.console.Output;
 import com.perfma.xlab.xpocket.framework.spi.execution.pipeline.DefaultProcessInfo;
 import com.perfma.xlab.xpocket.framework.spi.impl.XPocketStatusContext;
 import com.perfma.xlab.xpocket.plugin.execution.Node;
@@ -16,14 +15,15 @@ import org.jline.reader.impl.LineReaderImpl;
 public class TerminalUtil {
 
     public static String lineSeparator = System.getProperty("line.separator");
-
-    public static final Output OUTPUT = new Output(System.out, true);
-
-    public static void println(String input) {
-        OUTPUT.println(input);
-    }
+    
+    private static final boolean ONLY_AGENT = Boolean.valueOf(System.getProperty("XPOCKET_ONLY_AGENT"));
 
     public static void printHeader(XPocketProcess process, DefaultProcessInfo info) {
+        
+        if(ONLY_AGENT) {
+            return;
+        }
+        
         process.output(TerminalUtil.lineSeparator);
         process.output("--------------------------------------------------------------------");
 
@@ -52,6 +52,11 @@ public class TerminalUtil {
     }
 
     public static void printTail(XPocketProcess process, DefaultProcessInfo info) {
+        
+        if(ONLY_AGENT) {
+            return;
+        }
+        
         process.output(" " + TerminalUtil.lineSeparator);
         if (info != null && info.nodes().size() > 0) {
             Node lastNode = info.nodes().get(info.nodes().size() - 1);
@@ -90,11 +95,22 @@ public class TerminalUtil {
 
         for (CommandBaseInfo h : context.getCommandContexts()) {
             if (h.instance().isAvailableNow(h.name())) {
-                StringBuilder sb = new StringBuilder(" @|green  ").append(h.name()).append(" |@").append("  ");
-                while (sb.length() < 40) {
-                    sb.append(' ');
+                String shortName = h.shortName();
+                StringBuilder sb = new StringBuilder("  @|green ")
+                        .append(fillSpace(h.name() + 
+                                (shortName!=null ? ("," + shortName) : ""),28))
+                        .append(" |@").append("  ");
+                
+                String[] usages = h.usage().split("\n");
+                sb.append("@|white ").append(usages[0]).append(" |@");
+                sb.append(TerminalUtil.lineSeparator);
+                
+                for(int i=1;i<usages.length;i++) {
+                    sb.append(fillSpace("",33));
+                    sb.append("@|white ").append(usages[i]).append(" |@");
+                    sb.append(TerminalUtil.lineSeparator);
                 }
-                sb.append("@|white    ").append(h.usage()).append(" |@");
+
                 process.output(sb.toString());
             }
         }
@@ -127,4 +143,5 @@ public class TerminalUtil {
     public static String readLine(LineReaderImpl reader, String prompt) {
         return reader.readLine(prompt);
     }
+    
 }

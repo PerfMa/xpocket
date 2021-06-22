@@ -1,1 +1,2 @@
 com.perfma.xlab.xpocket.framework.spi.impl.DefaultPluginLoader
+com.perfma.xlab.xpocket.framework.spi.impl.agent.AgentPluginLoaderImpl

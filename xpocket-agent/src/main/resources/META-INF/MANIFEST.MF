@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: xpocket-agent
+Premain-Class: com.perfma.xlab.xpocket.agent.XPocketAgent
+Implementation-Version: 2.0.1
+Agent-Class: com.perfma.xlab.xpocket.agent.XPocketAgent
+Can-Redefine-Classes: true
+Specification-Title: xpocket-agent
+Can-Retransform-Classes: true
+Build-Jdk-Spec: 1.8
+Specification-Version: 2.0.1
