@@ -37,7 +37,7 @@ public class AgentUIEngineImpl extends AgentNamedObject implements UIEngine {
                     .signalHandler(Terminal.SignalHandler.SIG_IGN)
                     .dumb(true).build();
 
-            XPocketAgentShellProvider sp = new XPocketAgentShellProvider(isOnLoad);
+            XPocketAgentShellProvider sp = new XPocketAgentShellProvider(isOnLoad,inst);
             
             telnet = new Telnet(terminal, sp);
             sp.setTelnetd(telnet);

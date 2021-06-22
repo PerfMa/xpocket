@@ -1,7 +1,6 @@
 package com.perfma.xlab.xpocket.framework.spi.impl.agentlauncher;
 
 import com.perfma.xlab.xpocket.plugin.ui.UIEngine;
-import com.perfma.xlab.xpocket.utils.TerminalUtil;
 import com.perfma.xlab.xpocket.utils.XPocketConstants;
 import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.attach.VirtualMachineDescriptor;
@@ -33,7 +32,7 @@ public class AgentLauncherUIEngineImpl extends AgentLauncherNamedObject implemen
 
     private static final String XPOCKET_AGENT_JAR = "xpocket-agent-" + XPocketConstants.VERSION + ".jar";
     
-    private static int[] triggle = new int[]{27,79,66};
+    private static final int[] triggle = new int[]{27,79,66};
 
     private static final int DEFALUT_PORT = 9527;
 
@@ -50,7 +49,7 @@ public class AgentLauncherUIEngineImpl extends AgentLauncherNamedObject implemen
         String pid = "";
         int port = DEFALUT_PORT;
 
-        if (args != null && args.length > 2) {
+        if (args != null && args.length >= 2) {
             for (int i = 0; i < args.length; i++) {
                 String arg = args[i];
                 if ("-port".equals(arg)) {

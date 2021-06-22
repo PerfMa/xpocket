@@ -1,12 +1,14 @@
 package com.perfma.xlab.xpocket.framework.spi.impl;
 
 import com.perfma.xlab.xpocket.plugin.context.FrameworkPluginContext;
+import com.perfma.xlab.xpocket.spi.XPocketAgentPlugin;
 import com.perfma.xlab.xpocket.spi.XPocketPlugin;
 import com.perfma.xlab.xpocket.spi.command.XPocketCommand;
 import com.perfma.xlab.xpocket.spi.context.CommandBaseInfo;
 import com.perfma.xlab.xpocket.spi.context.PluginType;
 import com.perfma.xlab.xpocket.spi.process.XPocketProcess;
 import com.perfma.xlab.xpocket.utils.AsciiArtUtil;
+import java.lang.instrument.Instrumentation;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -41,6 +43,10 @@ public class DefaultPluginContext implements FrameworkPluginContext {
     private XPocketPlugin plugin;
 
     private boolean inited = false;
+    
+    private Instrumentation inst;
+    
+    private boolean isOnLoad = false;
     
     @Override
     public String getDescription() {
@@ -139,6 +145,14 @@ public class DefaultPluginContext implements FrameworkPluginContext {
         return plugin;
     }
 
+    public void setInst(Instrumentation inst) {
+        this.inst = inst;
+    }
+
+    public void setIsOnLoad(boolean isOnLoad) {
+        this.isOnLoad = isOnLoad;
+    }
+    
     @Override
     public void init(XPocketProcess process) {
         if (!inited && pluginClass != null) {
@@ -151,6 +165,11 @@ public class DefaultPluginContext implements FrameworkPluginContext {
             try {
                 plugin = (XPocketPlugin) pluginClass.getDeclaredConstructor().newInstance();
                 plugin.init(process);
+                
+                if(PluginType.JAVA_AGENT == type && inst != null) {
+                    ((XPocketAgentPlugin)plugin).init(process, inst, isOnLoad);
+                }
+                
                 logo = plugin.logo();
                 
                 if(logo == null) {

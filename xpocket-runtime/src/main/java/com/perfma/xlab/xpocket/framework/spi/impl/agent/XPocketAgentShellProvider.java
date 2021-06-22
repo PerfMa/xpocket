@@ -25,6 +25,7 @@ import com.perfma.xlab.xpocket.utils.XPocketConstants;
 import com.sun.tools.attach.AgentLoadException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.instrument.Instrumentation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -55,9 +56,12 @@ public class XPocketAgentShellProvider implements ShellProvider {
     private XPocketLineReader reader;
     
     private final boolean isOnLoad;
+    
+    private final Instrumentation inst;
 
-    public XPocketAgentShellProvider(boolean isOnLoad){
+    public XPocketAgentShellProvider(boolean isOnLoad,Instrumentation inst){
         this.isOnLoad = isOnLoad;
+        this.inst = inst;
     }
     
     public void setTelnetd(Telnet telnetd) {
@@ -253,7 +257,7 @@ public class XPocketAgentShellProvider implements ShellProvider {
         PluginManager.addPlugin(sysPluginContext);
 
         // 加载默认实现的插件
-        PluginManager.loadPlugins(def,isOnLoad);
+        PluginManager.loadPlugins(def,isOnLoad,inst);
 
         // 注册命令
         Set<FrameworkPluginContext> plugins = PluginManager.getAvailablePlugins();

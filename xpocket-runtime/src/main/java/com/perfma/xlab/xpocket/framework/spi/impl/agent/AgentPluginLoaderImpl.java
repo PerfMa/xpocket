@@ -1,6 +1,7 @@
 package com.perfma.xlab.xpocket.framework.spi.impl.agent;
 
 import com.perfma.xlab.xpocket.classloader.XPocketPluginClassLoader;
+import com.perfma.xlab.xpocket.framework.spi.execution.pipeline.DefaultXPocketProcess;
 import com.perfma.xlab.xpocket.framework.spi.impl.DefaultCommandContext;
 import com.perfma.xlab.xpocket.framework.spi.impl.DefaultPluginContext;
 import com.perfma.xlab.xpocket.framework.spi.impl.DefaultPluginLoader;
@@ -10,12 +11,15 @@ import com.perfma.xlab.xpocket.spi.XPocketPlugin;
 import com.perfma.xlab.xpocket.spi.command.CommandInfo;
 import com.perfma.xlab.xpocket.spi.command.CommandList;
 import com.perfma.xlab.xpocket.spi.command.XPocketCommand;
+import com.perfma.xlab.xpocket.spi.context.PluginType;
 import com.perfma.xlab.xpocket.utils.StringUtils;
 import com.perfma.xlab.xpocket.utils.TerminalUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.lang.instrument.Instrumentation;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -36,7 +40,7 @@ public class AgentPluginLoaderImpl extends AgentNamedObject implements PluginLoa
     private static final String XLAB_SPI_PACKAGE = "com.perfma.xlab.xpocket.spi.";
 
     private static final String PLUGIN_PATH = System.getProperty("XPOCKET_PLUGIN_PATH");
-    
+
     private static final boolean ONLY_AGENT = Boolean.valueOf(System.getProperty("XPOCKET_ONLY_AGENT"));
 
     private static final Class XPOCKET_COMMAND_CLASS = XPocketCommand.class;
@@ -46,10 +50,12 @@ public class AgentPluginLoaderImpl extends AgentNamedObject implements PluginLoa
     private static final String PLUGIN_UNI_FLAG_FORMAT = "%s@%s";
 
     private final HashMap<String, FrameworkPluginContext> pluginMap = new HashMap<>();
-    
+
     @Override
-    public boolean loadPlugins(String resouceName, boolean isOnLoad) {
-                try {
+    public boolean loadPlugins(String resouceName, boolean isOnLoad, Instrumentation inst) {
+        try {
+            DefaultXPocketProcess quietProcess = new DefaultXPocketProcess("XPocket", null);
+            quietProcess.setOutputStream(System.out);
             File pluginDir = new File(PLUGIN_PATH);
             File[] plugins = pluginDir.listFiles(new FilenameFilter() {
                 @Override
@@ -58,20 +64,19 @@ public class AgentPluginLoaderImpl extends AgentNamedObject implements PluginLoa
                 }
             });
 
-            if(plugins == null || plugins.length == 0) {
+            if (plugins == null || plugins.length == 0) {
                 return true;
             }
-            System.out.println(ONLY_AGENT);
             HashSet<String> nameUniIndex = new HashSet<>();
             for (File plugin : plugins) {
                 XPocketPluginClassLoader pluginLoader
                         = new XPocketPluginClassLoader(
-                        new URL[]{plugin.toURI().toURL()},
-                        DefaultPluginLoader.class.getClassLoader());
+                                new URL[]{plugin.toURI().toURL()},
+                                DefaultPluginLoader.class.getClassLoader());
                 URL pluginDef = pluginLoader.findResource(resouceName);
                 try (InputStreamReader reader
-                             = new InputStreamReader(pluginDef.openStream(),
-                        Charset.forName("UTF-8"))) {
+                        = new InputStreamReader(pluginDef.openStream(),
+                                Charset.forName("UTF-8"))) {
                     Properties prop = new Properties();
                     prop.load(reader);
 
@@ -91,15 +96,15 @@ public class AgentPluginLoaderImpl extends AgentNamedObject implements PluginLoa
                     String agent_mode = prop.getProperty("agent-mode");
 
                     //
-                    if(!"java_agent".equals(plugin_type) && ONLY_AGENT) {
+                    if ("java_agent".equals(plugin_type)) {
+                        if ("on_load".equals(agent_mode) && !isOnLoad) {
+                            continue;
+                        }
+                        context.setType(PluginType.JAVA_AGENT);
+                    } else if (ONLY_AGENT) {
                         continue;
                     }
 
-                    if("java_agent".equals(plugin_type) && 
-                            "on_load".equals(agent_mode) && !isOnLoad) {
-                        continue;
-                    }
-                       
                     if (desc != null && !desc.isEmpty()) {
                         context.setDescription(desc);
                     }
@@ -146,7 +151,7 @@ public class AgentPluginLoaderImpl extends AgentNamedObject implements PluginLoa
                             new FileInputStream(plugin))) {
 
                         for (ZipEntry e = jarIs.getNextEntry(); e != null;
-                             e = jarIs.getNextEntry()) {
+                                e = jarIs.getNextEntry()) {
                             if (!e.isDirectory() && e.getName().endsWith(".class")) {
                                 String className = e.getName().replace('/', '.')
                                         .substring(0, e.getName().lastIndexOf("."));
@@ -171,39 +176,39 @@ public class AgentPluginLoaderImpl extends AgentNamedObject implements PluginLoa
                                 if (XPOCKET_COMMAND_CLASS.isAssignableFrom(commandClass)) {
                                     XPocketCommand commandObject
                                             = (XPocketCommand) commandClass.getConstructor()
-                                            .newInstance();
+                                                    .newInstance();
 
                                     //collect commandinfo information
                                     CommandInfo[] infos
                                             = (CommandInfo[]) commandClass
-                                            .getAnnotationsByType(
-                                                    CommandInfo.class);
+                                                    .getAnnotationsByType(
+                                                            CommandInfo.class);
                                     for (CommandInfo info : infos) {
                                         cmdMap.put(info.name(),
-                                                new DefaultCommandContext(info.name(),info.shortName(),
-                                                        info.usage(), info.index(), 
+                                                new DefaultCommandContext(info.name(), info.shortName(),
+                                                        info.usage(), info.index(),
                                                         commandObject));
                                     }
 
                                     //collect commandlist infomation
                                     CommandList[] lists
                                             = (CommandList[]) commandClass
-                                            .getAnnotationsByType(
-                                                    CommandList.class);
+                                                    .getAnnotationsByType(
+                                                            CommandList.class);
                                     for (CommandList list : lists) {
                                         String[] names = list.names();
                                         String[] usages = list.usage();
 
                                         for (int i = 0; i < names.length; i++) {
                                             cmdMap.put(names[i],
-                                                    new DefaultCommandContext(names[i],null,
+                                                    new DefaultCommandContext(names[i], null,
                                                             usages.length > i
                                                                     ? usages[i]
-                                                                    : "", 50, 
+                                                                    : "", 50,
                                                             commandObject));
                                         }
                                     }
-                                } 
+                                }
 //                                else if (XPOCKET_PLUGIN_CLASS.isAssignableFrom(commandClass)
 //                                        && pluginMain == null) {
 //                                    context.setPluginClass(commandClass);
@@ -214,7 +219,14 @@ public class AgentPluginLoaderImpl extends AgentNamedObject implements PluginLoa
                         }
 
                         context.setCommands(cmdMap);
-
+                        
+                        //if this is a Java Agent Plugin,do init 
+                        context.setInst(inst);
+                        context.setIsOnLoad(isOnLoad);
+                        if(PluginType.JAVA_AGENT == context.getType()) {
+                            context.init(quietProcess);
+                        }
+                        
                         if (nameUniIndex.contains(context.getName())) {
                             pluginMap.remove(context.getName());
                         } else {
