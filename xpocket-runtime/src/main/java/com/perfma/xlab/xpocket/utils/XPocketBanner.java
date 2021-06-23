@@ -1,11 +1,10 @@
 package com.perfma.xlab.xpocket.utils;
 
-import org.apache.commons.io.IOUtils;
-
 import java.io.FileInputStream;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Map;
+import org.apache.commons.io.IOUtils;
 
 
 
