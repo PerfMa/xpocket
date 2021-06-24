@@ -23,7 +23,7 @@ public class XPocketConstants {
 
     public static final String XPOCKET_COMMAND_PACKAGE = "com.perfma.xlab.xpocket.command.impl.";
 
-    public static final String VERSION = "2.0.1-SNAPSHOT";
+    public static final String VERSION = "2.1.0-RELEASE";
 
     public static final String GITHUB = "https://github.com/PerfMa/xpocket";
 
