@@ -56,35 +56,43 @@ public class DefaultProcessDefinition {
 
     public void execute(String input, ExecuteContextWrapper executeContextWrapper) throws Throwable {
 
-        String[] realArgs = this.enableExecuteContext(input, executeContextWrapper, args);
-        DefaultXPocketProcess process = new DefaultXPocketProcess(cmd, realArgs);
-        process.setInput(input);
-        process.setOutputStream(outputStream);
-        process.setPdef(this);
-        process.setExecuteContext(executeContextWrapper.getExecuteContext());
-        currentProcess = process;
-        hasProcess = true;
         XPocketCommand command = context.getCommand(cmd);
-        if (command == null) {
-            //未找到的命令尝试交给系统命令
-            command = SysCommand.getInstance();
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        try {
+            if (command != null) {
+                Thread.currentThread().setContextClassLoader(command.getClass().getClassLoader());
+            }
+            String[] realArgs = this.enableExecuteContext(input, executeContextWrapper, args);
+            DefaultXPocketProcess process = new DefaultXPocketProcess(cmd, realArgs);
+            process.setInput(input);
+            process.setOutputStream(outputStream);
+            process.setPdef(this);
+            process.setExecuteContext(executeContextWrapper.getExecuteContext());
+            currentProcess = process;
+            hasProcess = true;
+            if (command == null) {
+                //未找到的命令尝试交给系统命令
+                command = SysCommand.getInstance();
+            }
+            command.invoke(process, XPocketStatusContext.instance);
+        } finally {
+            Thread.currentThread().setContextClassLoader(cl);
         }
-        command.invoke(process, XPocketStatusContext.instance);
     }
 
     private String[] enableExecuteContext(String zeroVar, ExecuteContextWrapper executeContextWrapper, String[] args) {
         executeContextWrapper.nextExecuteContext();
         executeContextWrapper.replaceZero(zeroVar);
-        
+
         AtomicBoolean flag = new AtomicBoolean(false);
         String[] res = new String[args == null ? 0 : args.length];
-        
+
         if (args != null && args.length > 0) {
             for (int i = 0; i < args.length; i++) {
                 res[i] = InternalVariableParse.parse(args[i], executeContextWrapper, flag);
             }
         }
-        
+
         if (!flag.get()) {
             if (zeroVar != null && !zeroVar.trim().isEmpty()) {
                 if (context.getCommand(cmd) == null || !context.getCommand(cmd).isPiped()) {

@@ -162,7 +162,9 @@ public class DefaultPluginContext implements FrameworkPluginContext {
 
     private synchronized void doInit(XPocketProcess process) {
         if (!inited) {
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
             try {
+                Thread.currentThread().setContextClassLoader(pluginClass.getClassLoader());
                 plugin = (XPocketPlugin) pluginClass.getDeclaredConstructor().newInstance();
                 plugin.init(process);
                 
@@ -189,6 +191,8 @@ public class DefaultPluginContext implements FrameworkPluginContext {
                 inited = true;
             } catch (Throwable ex) {
                 ex.printStackTrace();
+            } finally {
+                Thread.currentThread().setContextClassLoader(cl);
             }
         }
     }

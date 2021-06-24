@@ -172,15 +172,20 @@ public class DefaultPluginLoader extends DefaultNamedObject implements PluginLoa
                             for (String commandClassName : classNames) {
                                 Class commandClass = pluginLoader.loadClass(commandClassName);
                                 if (XPOCKET_COMMAND_CLASS.isAssignableFrom(commandClass)) {
-                                    XPocketCommand commandObject
-                                            = (XPocketCommand) commandClass.getConstructor()
-                                                    .newInstance();
-
                                     //collect commandinfo information
                                     CommandInfo[] infos
                                             = (CommandInfo[]) commandClass
                                                     .getAnnotationsByType(
                                                             CommandInfo.class);
+                                    //优先判断是否存在注解
+                                    if(infos == null || infos.length == 0){   
+                                        continue; 
+                                    }
+                                    
+                                    XPocketCommand commandObject
+                                            = (XPocketCommand) commandClass.getConstructor()
+                                                    .newInstance();
+                                    
                                     for (CommandInfo info : infos) {
                                         cmdMap.put(info.name(),
                                                 new DefaultCommandContext(info.name(),info.shortName(),
@@ -233,8 +238,9 @@ public class DefaultPluginLoader extends DefaultNamedObject implements PluginLoa
                                 context.getName(), context.getNamespace().toUpperCase()),
                                 context);
                     } catch (Throwable ex) {
-                        System.out.println(String.format("load plugin %s error : \n %s",
-                                context.getName(), ex));
+                        System.err.println(String.format("load plugin %s class %s error :\n",
+                                context.getName(),context.getPluginClass()));
+                        ex.printStackTrace(System.err);
                     }
                 }
             }
