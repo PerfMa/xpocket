@@ -29,7 +29,8 @@
             <directory>scripts</directory>
             <outputDirectory>.</outputDirectory>
             <includes>
-                <include>**</include>
+                <include>xpocket.bat</include>
+                <include>xpocket.sh</include>
             </includes>
         </fileSet>
         <fileSet>
