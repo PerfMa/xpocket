@@ -24,7 +24,7 @@ public class CommandProcessor {
 
     public static Set<String> aliases;
 
-    public static String RESOURCE = System.getProperty("config_dir") + "process.properties";
+    public static String RESOURCE = System.getProperty("XPOCKET_CONFIG_PATH") + "process.properties";
 
     public static void init(DefaultXPocketProcess process) {
         aliases = new HashSet<>();

@@ -7,8 +7,10 @@ import com.perfma.xlab.xpocket.spi.XPocketPlugin;
 import com.perfma.xlab.xpocket.spi.command.CommandInfo;
 import com.perfma.xlab.xpocket.spi.command.CommandList;
 import com.perfma.xlab.xpocket.spi.command.XPocketCommand;
+import com.perfma.xlab.xpocket.utils.AsciiArtUtil;
 import com.perfma.xlab.xpocket.utils.StringUtils;
 import com.perfma.xlab.xpocket.utils.TerminalUtil;
+import com.perfma.xlab.xpocket.utils.XPocketConstants;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,7 +29,7 @@ public class DefaultPluginLoader extends DefaultNamedObject implements PluginLoa
 
     private static final String XLAB_SPI_PACKAGE = "com.perfma.xlab.xpocket.spi.";
 
-    private static final String PLUGIN_PATH = System.getProperty("PLUGIN_PATH");
+    private static final String PLUGIN_PATH = System.getProperty("XPOCKET_PLUGIN_PATH");
 
     private static final Class XPOCKET_COMMAND_CLASS = XPocketCommand.class;
 
@@ -48,20 +50,20 @@ public class DefaultPluginLoader extends DefaultNamedObject implements PluginLoa
                 }
             });
 
-            if(plugins == null || plugins.length == 0) {
+            if (plugins == null || plugins.length == 0) {
                 return true;
             }
-            
+
             HashSet<String> nameUniIndex = new HashSet<>();
             for (File plugin : plugins) {
                 XPocketPluginClassLoader pluginLoader
                         = new XPocketPluginClassLoader(
-                        new URL[]{plugin.toURI().toURL()},
-                        DefaultPluginLoader.class.getClassLoader());
+                                new URL[]{plugin.toURI().toURL()},
+                                DefaultPluginLoader.class.getClassLoader());
                 URL pluginDef = pluginLoader.findResource(resouceName);
                 try (InputStreamReader reader
-                             = new InputStreamReader(pluginDef.openStream(),
-                        Charset.forName("UTF-8"))) {
+                        = new InputStreamReader(pluginDef.openStream(),
+                                Charset.forName("UTF-8"))) {
                     Properties prop = new Properties();
                     prop.load(reader);
 
@@ -77,6 +79,29 @@ public class DefaultPluginLoader extends DefaultNamedObject implements PluginLoa
                     String tool_author = prop.getProperty("tool-author");
                     String tool_project = prop.getProperty("tool-project");
                     String tool_version = prop.getProperty("tool-version");
+                    String plugin_type = prop.getProperty("plugin-type");
+                    String agent_mode = prop.getProperty("agent-mode");
+
+                    if ("on_load".equals(agent_mode)) {
+                        continue;
+                    }
+
+                    //
+                    if ("java_agent".equals(plugin_type)) {
+                        pluginMain = null;
+                    }
+
+                    //auto handle logo
+                    {
+                        String name = context.getName();
+                        StringBuilder text = new StringBuilder(name.length() * 2);
+
+                        for (char c : name.toUpperCase().toCharArray()) {
+                            text.append(c).append(" ");
+                        }
+
+                        context.setLogo(AsciiArtUtil.text2AsciiArt(text.toString()));
+                    }
 
                     if (desc != null && !desc.isEmpty()) {
                         context.setDescription(desc);
@@ -124,7 +149,7 @@ public class DefaultPluginLoader extends DefaultNamedObject implements PluginLoa
                             new FileInputStream(plugin))) {
 
                         for (ZipEntry e = jarIs.getNextEntry(); e != null;
-                             e = jarIs.getNextEntry()) {
+                                e = jarIs.getNextEntry()) {
                             if (!e.isDirectory() && e.getName().endsWith(".class")) {
                                 String className = e.getName().replace('/', '.')
                                         .substring(0, e.getName().lastIndexOf("."));
@@ -144,45 +169,57 @@ public class DefaultPluginLoader extends DefaultNamedObject implements PluginLoa
                     try {
                         try {
                             Thread.currentThread().setContextClassLoader(pluginLoader);
-                            for (String pluginClassName : classNames) {
-                                Class pluginClass = pluginLoader.loadClass(pluginClassName);
-                                if (XPOCKET_COMMAND_CLASS.isAssignableFrom(pluginClass)) {
-                                    XPocketCommand commandObject
-                                            = (XPocketCommand) pluginClass.getConstructor()
-                                            .newInstance();
-
+                            for (String commandClassName : classNames) {
+                                Class commandClass = pluginLoader.loadClass(commandClassName);
+                                if (XPOCKET_COMMAND_CLASS.isAssignableFrom(commandClass)) {
                                     //collect commandinfo information
                                     CommandInfo[] infos
-                                            = (CommandInfo[]) pluginClass
-                                            .getAnnotationsByType(
-                                                    CommandInfo.class);
+                                            = (CommandInfo[]) commandClass
+                                                    .getAnnotationsByType(
+                                                            CommandInfo.class);
+                                    //优先判断是否存在注解
+                                    if(infos == null || infos.length == 0){   
+                                        continue; 
+                                    }
+                                    
+                                    XPocketCommand commandObject
+                                            = (XPocketCommand) commandClass.getConstructor()
+                                                    .newInstance();
+                                    
                                     for (CommandInfo info : infos) {
                                         cmdMap.put(info.name(),
-                                                new DefaultCommandContext(info.name(),
-                                                        info.usage(), info.index(), commandObject));
+                                                new DefaultCommandContext(info.name(),info.shortName(),
+                                                        info.usage(), info.index(),
+                                                        "java_agent".equals(plugin_type)
+                                                        ? XPocketConstants.DEFAULT_ADAPTOR
+                                                        : commandObject));
                                     }
 
                                     //collect commandlist infomation
                                     CommandList[] lists
-                                            = (CommandList[]) pluginClass
-                                            .getAnnotationsByType(
-                                                    CommandList.class);
+                                            = (CommandList[]) commandClass
+                                                    .getAnnotationsByType(
+                                                            CommandList.class);
                                     for (CommandList list : lists) {
                                         String[] names = list.names();
                                         String[] usages = list.usage();
 
                                         for (int i = 0; i < names.length; i++) {
                                             cmdMap.put(names[i],
-                                                    new DefaultCommandContext(names[i],
+                                                    new DefaultCommandContext(names[i],null,
                                                             usages.length > i
                                                                     ? usages[i]
-                                                                    : "", 50, commandObject));
+                                                                    : "", 50,
+                                                            "java_agent".equals(plugin_type)
+                                                            ? XPocketConstants.DEFAULT_ADAPTOR
+                                                            : commandObject));
                                         }
                                     }
-                                } else if (XPOCKET_PLUGIN_CLASS.isAssignableFrom(pluginClass)
-                                        && pluginMain == null) {
-                                    context.setPluginClass(pluginClass);
                                 }
+//                                else if (XPOCKET_PLUGIN_CLASS.isAssignableFrom(commandClass)
+//                                        && pluginMain == null) {
+//                                    context.setPluginClass(commandClass);
+//                                }
                             }
                         } finally {
                             Thread.currentThread().setContextClassLoader(currentTCL);
@@ -201,8 +238,9 @@ public class DefaultPluginLoader extends DefaultNamedObject implements PluginLoa
                                 context.getName(), context.getNamespace().toUpperCase()),
                                 context);
                     } catch (Throwable ex) {
-                        System.out.println(String.format("load plugin %s error : \n %s",
-                                context.getName(), ex));
+                        System.err.println(String.format("load plugin %s class %s error :\n",
+                                context.getName(),context.getPluginClass()));
+                        ex.printStackTrace(System.err);
                     }
                 }
             }

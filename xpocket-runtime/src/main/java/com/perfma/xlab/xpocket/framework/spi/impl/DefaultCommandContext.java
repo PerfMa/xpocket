@@ -14,6 +14,8 @@ public class DefaultCommandContext implements CommandBaseInfo {
 
     private final String name;
     
+    private final String shortName;
+    
     private final String usage;
     
     private final int index;
@@ -23,8 +25,13 @@ public class DefaultCommandContext implements CommandBaseInfo {
     
     private final XPocketCommand instance;
 
-    public DefaultCommandContext(String name, String usage,int index, XPocketCommand instance) {
+    public DefaultCommandContext(String name, String shortName,String usage,int index, XPocketCommand instance) {
         this.name = name;
+        if(shortName != null && !shortName.isEmpty()) {
+            this.shortName = shortName;
+        } else {
+            this.shortName = null;
+        }
         this.usage = usage;
         this.index = index;
         this.instance = instance;
@@ -49,6 +56,13 @@ public class DefaultCommandContext implements CommandBaseInfo {
     public XPocketCommand instance() {
         return instance;
     }
+    
+    
+    @Override
+    public String shortName() {
+        return shortName;
+    }
+    
 
     @Override
     public int hashCode() {

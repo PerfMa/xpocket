@@ -3,6 +3,7 @@ package com.perfma.xlab.xpocket.plugin.loader;
 
 import com.perfma.xlab.xpocket.plugin.base.NamedObject;
 import com.perfma.xlab.xpocket.plugin.context.FrameworkPluginContext;
+import java.lang.instrument.Instrumentation;
 
 import java.util.Set;
 
@@ -17,7 +18,26 @@ public interface PluginLoader extends NamedObject {
      * @param resouceName 如：META-INF/xpocket.def
      * @return
      */
-    boolean loadPlugins(String resouceName);
+    @Deprecated
+    default boolean loadPlugins(String resouceName){
+        throw new UnsupportedOperationException("It`s default implementation "
+                + "for loadPlugins(String resouceName),what means your provider "
+                + "never implemented this interface. ");
+    }
+    
+        /**
+     * Load plugins and build it into FrameworkPluginContexts
+     *
+     * @param resouceName 如：META-INF/xpocket.def
+     * @param isOnLoad is onLoad or onAttach when agent mode
+     * @param inst Instrumentation instance of Java Agent
+     * @return
+     */
+    default boolean loadPlugins(String resouceName,boolean isOnLoad,Instrumentation inst){
+        throw new UnsupportedOperationException("It`s default implementation "
+                + "for loadPlugins(String resouceName,boolean isOnLoad),what "
+                + "means your provider never implemented this interface. ");
+    }
 
     /**
      * Gets a list of available plug-ins

@@ -1,30 +1,33 @@
 package com.perfma.xlab.xpocket.framework.spi.execution.pipeline;
 
 import com.perfma.xlab.xpocket.command.impl.SysCommand;
+import com.perfma.xlab.xpocket.context.ExecuteContextWrapper;
 import com.perfma.xlab.xpocket.framework.spi.impl.XPocketStatusContext;
 import com.perfma.xlab.xpocket.spi.command.XPocketCommand;
 import com.perfma.xlab.xpocket.spi.context.PluginBaseInfo;
+import com.perfma.xlab.xpocket.utils.InternalVariableParse;
 
 import java.io.OutputStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author gongyu <yin.tong@perfma.com>
  */
 public class DefaultProcessDefinition {
 
-    private final PluginBaseInfo context;
-    private final String cmd;
-    private final String[] args;
-    private boolean isEnd = true;
+    protected final PluginBaseInfo context;
+    protected final String cmd;
+    protected final String[] args;
+    protected boolean isEnd = true;
 
-    private boolean hasProcess = false;
-    private DefaultXPocketProcess currentProcess;
+    protected boolean hasProcess = false;
+    protected DefaultXPocketProcess currentProcess;
 
-    private DefaultProcessDefinition next;
+    protected DefaultProcessDefinition next;
 
-    private OutputStream outputStream;
+    protected OutputStream outputStream;
 
-    private ExecutionPipeLine pipeline;
+    protected ExecutionPipeLine pipeline;
 
     public DefaultProcessDefinition(PluginBaseInfo context, String cmd, String[] args) {
         this.context = context;
@@ -51,32 +54,55 @@ public class DefaultProcessDefinition {
         this.pipeline = pipeline;
     }
 
-    public void execute(String input) throws Throwable {
-        String[] realArgs;
-        if (input == null || input.trim().isEmpty()) {
-            realArgs = args;
-        } else {
-            if (context.getCommand(cmd) != null && context.getCommand(cmd).isPiped()) {
-                realArgs = args;
-            } else {
-                realArgs = new String[args.length + 1];
-                realArgs[0] = input;
-                System.arraycopy(args, 0, realArgs, 1, args.length);
+    public void execute(String input, ExecuteContextWrapper executeContextWrapper) throws Throwable {
+
+        XPocketCommand command = context.getCommand(cmd);
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        try {
+            if (command != null) {
+                Thread.currentThread().setContextClassLoader(command.getClass().getClassLoader());
+            }
+            String[] realArgs = this.enableExecuteContext(input, executeContextWrapper, args);
+            DefaultXPocketProcess process = new DefaultXPocketProcess(cmd, realArgs);
+            process.setInput(input);
+            process.setOutputStream(outputStream);
+            process.setPdef(this);
+            process.setExecuteContext(executeContextWrapper.getExecuteContext());
+            currentProcess = process;
+            hasProcess = true;
+            if (command == null) {
+                //未找到的命令尝试交给系统命令
+                command = SysCommand.getInstance();
+            }
+            command.invoke(process, XPocketStatusContext.instance);
+        } finally {
+            Thread.currentThread().setContextClassLoader(cl);
+        }
+    }
+
+    private String[] enableExecuteContext(String zeroVar, ExecuteContextWrapper executeContextWrapper, String[] args) {
+        executeContextWrapper.nextExecuteContext();
+        executeContextWrapper.replaceZero(zeroVar);
+
+        AtomicBoolean flag = new AtomicBoolean(false);
+        String[] res = new String[args == null ? 0 : args.length];
+
+        if (args != null && args.length > 0) {
+            for (int i = 0; i < args.length; i++) {
+                res[i] = InternalVariableParse.parse(args[i], executeContextWrapper, flag);
             }
         }
 
-        DefaultXPocketProcess process = new DefaultXPocketProcess(cmd, realArgs);
-        process.setInput(input);
-        process.setOutputStream(outputStream);
-        process.setPdef(this);
-        currentProcess = process;
-        hasProcess = true;
-        XPocketCommand command = context.getCommand(cmd);
-        if (command == null) {
-            //未找到的命令尝试交给系统命令
-            command = SysCommand.getInstance();
+        if (!flag.get()) {
+            if (zeroVar != null && !zeroVar.trim().isEmpty()) {
+                if (context.getCommand(cmd) == null || !context.getCommand(cmd).isPiped()) {
+                    res = new String[args.length + 1];
+                    res[0] = zeroVar;
+                    System.arraycopy(args, 0, res, 1, args.length);
+                }
+            }
         }
-        command.invoke(process, XPocketStatusContext.instance);
+        return res;
     }
 
     public void pipeEnd() {

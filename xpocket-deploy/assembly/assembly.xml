@@ -11,8 +11,16 @@
         <dependencySet>
             <excludes>
                 <exclude>com.perfma.xlab:xpocket-deploy</exclude>
+                <exclude>com.perfma.xlab:xpocket-agent</exclude>
             </excludes>
             <outputDirectory>lib</outputDirectory>
+            <useProjectArtifact>true</useProjectArtifact>
+        </dependencySet>
+        <dependencySet>
+            <includes>
+                <include>com.perfma.xlab:xpocket-agent</include>
+            </includes>
+            <outputDirectory>agent</outputDirectory>
             <useProjectArtifact>true</useProjectArtifact>
         </dependencySet>
     </dependencySets>
@@ -21,7 +29,8 @@
             <directory>scripts</directory>
             <outputDirectory>.</outputDirectory>
             <includes>
-                <include>**</include>
+                <include>xpocket.bat</include>
+                <include>xpocket.sh</include>
             </includes>
         </fileSet>
         <fileSet>
