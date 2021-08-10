@@ -22,6 +22,7 @@
 * [XPocket plugin Perf](https://github.com/PerfMa/xpocket-plugin-perf)
 * [XPocket plugin Arthas](https://github.com/PerfMa/xpocket-plugin-arthas)
 * [XPocket plugin VJMap](https://github.com/PerfMa/xpocket-plugin-vjmap)
+* [XPocket plugin VJMap](https://github.com/PerfMa/xpocket-plugin-vjtop)
 
 
 ## XPocket在线教程
