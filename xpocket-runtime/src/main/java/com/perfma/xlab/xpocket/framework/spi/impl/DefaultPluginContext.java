@@ -174,10 +174,13 @@ public class DefaultPluginContext implements FrameworkPluginContext {
                 }
 
                 //获取插件自定义LOGO
-                Field logoField = pluginClass.getDeclaredField("LOGO");
-                logoField.setAccessible(true);
-                if (logoField.get(pluginClass).toString().length() > 0){
-                    logo = logoField.get(pluginClass).toString();
+                Field[] fields = pluginClass.getDeclaredFields();
+
+                for (Field field : fields) {
+                    field.setAccessible(true);
+                    if (field.getName().equals("LOGO") && field.get(pluginClass).toString().length() > 0){
+                        logo = field.get(pluginClass).toString();
+                    }
                 }
                 //logo = plugin.logo();
 
