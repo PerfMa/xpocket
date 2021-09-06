@@ -10,6 +10,7 @@ import com.perfma.xlab.xpocket.spi.process.XPocketProcess;
 import com.perfma.xlab.xpocket.utils.AsciiArtUtil;
 import java.lang.instrument.Instrumentation;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -171,10 +172,16 @@ public class DefaultPluginContext implements FrameworkPluginContext {
                 if(PluginType.JAVA_AGENT == type && inst != null) {
                     ((XPocketAgentPlugin)plugin).init(process, inst, isOnLoad);
                 }
-                
-                logo = plugin.logo();
-                
-                if(logo == null) {
+
+                //获取插件自定义LOGO
+                Field logoField = pluginClass.getDeclaredField("LOGO");
+                logoField.setAccessible(true);
+                if (logoField.get(pluginClass).toString().length() > 0){
+                    logo = logoField.get(pluginClass).toString();
+                }
+                //logo = plugin.logo();
+
+                if(logo == null || logo.isEmpty()) {
                     StringBuilder text = new StringBuilder(name.length() * 2);
                     
                     for(char c : name.toUpperCase().toCharArray()) {
