@@ -14,13 +14,34 @@ import org.jline.reader.impl.LineReaderImpl;
  */
 public class TerminalUtil {
 
+    public static String OS_NAME = System.getProperty("os.name");
+    
     public static String lineSeparator = System.getProperty("line.separator");
     
-    private static final boolean ONLY_AGENT = Boolean.valueOf(System.getProperty("XPOCKET_ONLY_AGENT"));
+    public static final boolean ONLY_AGENT = Boolean.valueOf(System.getProperty("XPOCKET_ONLY_AGENT"));
+    
+    public static final boolean SIMPLE_MODE = Boolean.valueOf(System.getProperty("XPOCKET_SIMPLE_MODE"));
 
+    public static void printStart(XPocketProcess process) {
+        
+        if(ONLY_AGENT || SIMPLE_MODE) {
+            return;
+        }
+        
+        process.output("@|green *** Welcome to XPocket-Cli|@ @|green ***|@");
+        process.output(TerminalUtil.lineSeparator);
+        LogoPrinter.print(process);
+        process.output(TerminalUtil.lineSeparator);
+        process.output("@|green Initiator : PerfMa |@");
+        process.output("@|green version   : " + XPocketConstants.VERSION + " |@");
+        process.output("@|green site      : " + XPocketConstants.CLUB + " |@");
+        process.output("@|green github    : " + XPocketConstants.GITHUB + " |@");
+        process.output(TerminalUtil.lineSeparator);
+    }
+    
     public static void printHeader(XPocketProcess process, DefaultProcessInfo info) {
         
-        if(ONLY_AGENT) {
+        if(ONLY_AGENT || SIMPLE_MODE) {
             return;
         }
         
@@ -53,7 +74,7 @@ public class TerminalUtil {
 
     public static void printTail(XPocketProcess process, DefaultProcessInfo info) {
         
-        if(ONLY_AGENT) {
+        if(ONLY_AGENT || SIMPLE_MODE) {
             return;
         }
         

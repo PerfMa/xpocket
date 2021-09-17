@@ -201,7 +201,7 @@ public abstract class AbstractTerminal implements Terminal {
             try {
                 capabilities = InfoCmp.getInfoCmp(type);
             } catch (Exception e) {
-                Log.warn("Unable to retrieve infocmp for type " + type, e);
+                Log.warn("Unable to retrieve infocmp for type " + type);
             }
         }
         if (capabilities == null) {

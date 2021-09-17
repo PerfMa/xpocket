@@ -205,15 +205,7 @@ public class DefaultUIEngine extends DefaultNamedObject implements UIEngine {
      * @param def
      */
     private void xpocketInit(String def, DefaultXPocketProcess systemProcess) {
-        systemProcess.output("@|green *** Welcome to XPocket-Cli|@ @|green ***|@");
-        systemProcess.output(TerminalUtil.lineSeparator);
-        LogoPrinter.print(systemProcess);
-        systemProcess.output(TerminalUtil.lineSeparator);
-        systemProcess.output("@|green Initiator : PerfMa |@");
-        systemProcess.output("@|green version   : " + XPocketConstants.VERSION + " |@");
-        systemProcess.output("@|green site      : " + XPocketConstants.CLUB + " |@");
-        systemProcess.output("@|green github    : " + XPocketConstants.GITHUB + " |@");
-        systemProcess.output(TerminalUtil.lineSeparator);
+        TerminalUtil.printStart(systemProcess);
 
         // 初始化 System plugin
         DefaultPluginContext sysPluginContext = initSystemPlugin();
@@ -230,7 +222,9 @@ public class DefaultUIEngine extends DefaultNamedObject implements UIEngine {
         FrameworkPluginContext pluginContext = PluginManager.getPlugin(XPocketConstants.SYSTEM_PLUGIN_NAME, XPocketConstants.SYSTEM_PLUGIN_NS);
         pluginContext.init(systemProcess);
         XPocketStatusContext.open(pluginContext, systemProcess);
-        TerminalUtil.printHelp(systemProcess, pluginContext);
+        if(!TerminalUtil.SIMPLE_MODE) {
+            TerminalUtil.printHelp(systemProcess, pluginContext);
+        }
         TerminalUtil.printTail(systemProcess, null);
     }
 

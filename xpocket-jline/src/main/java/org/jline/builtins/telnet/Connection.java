@@ -7,7 +7,7 @@
  * https://opensource.org/licenses/BSD-3-Clause
  */
 
-/*
+ /*
  * Java TelnetD library (embeddable telnet daemon)
  * Copyright (c) 2000-2005 Dieter Wimberger
  * All rights reserved.
@@ -37,9 +37,10 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  ***/
-
 package org.jline.builtins.telnet;
 
+import java.io.IOError;
+import java.net.SocketException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
@@ -50,18 +51,18 @@ import java.util.logging.Logger;
  * <p>
  * It is derived from java.lang.Thread, which reflects the architecture
  * constraint of one thread per connection. This might seem a waste of
- * resources, but as a matter of fact sharing threads would require a
- * far more complex imlementation, due to the fact that telnet is not a
- * stateless protocol (i.e. alive throughout a session of multiple requests
- * and responses).
+ * resources, but as a matter of fact sharing threads would require a far more
+ * complex imlementation, due to the fact that telnet is not a stateless
+ * protocol (i.e. alive throughout a session of multiple requests and
+ * responses).
  * <p>
  * Each Connection instance is created by the listeners ConnectionManager
  * instance, making it part of a threadgroup and passing in an associated
  * ConnectionData instance, that holds vital information about the connection.
  * Be sure to take a look at their documention.
  * <p>
- * Once the thread has started and is running, it will get a login
- * shell instance from the ShellManager and run passing its own reference.
+ * Once the thread has started and is running, it will get a login shell
+ * instance from the ShellManager and run passing its own reference.
  *
  * @author Dieter Wimberger
  * @version 2.0 (16/07/2006)
@@ -80,14 +81,14 @@ public abstract class Connection
     private ConnectionData connectionData;    //associated information
 
     /**
-     * Constructs a TelnetConnection by invoking its parent constructor
-     * and setting of various members.<br>
-     * Subsequently instantiates the whole i/o subsystem, negotiating
-     * telnet protocol level options etc.<br>
+     * Constructs a TelnetConnection by invoking its parent constructor and
+     * setting of various members.<br>
+     * Subsequently instantiates the whole i/o subsystem, negotiating telnet
+     * protocol level options etc.<br>
      *
      * @param tcg ThreadGroup that this instance is running in.
-     * @param cd  ConnectionData instance containing all vital information
-     *            of this connection.
+     * @param cd ConnectionData instance containing all vital information of
+     * this connection.
      * @see ConnectionData
      */
     public Connection(ThreadGroup tcg, ConnectionData cd) {
@@ -103,19 +104,18 @@ public abstract class Connection
     /**
      * Method overloaded to implement following behaviour:
      * <ol>
-     * <li> On first entry, retrieve an instance of the configured
-     * login shell from the ShellManager and run it.
-     * <li> Handle a shell switch or close down disgracefully when
-     * problems (i.e. unhandled unchecked exceptions) occur in the
-     * running shell.
+     * <li> On first entry, retrieve an instance of the configured login shell
+     * from the ShellManager and run it.
+     * <li> Handle a shell switch or close down disgracefully when problems
+     * (i.e. unhandled unchecked exceptions) occur in the running shell.
      * </ol>
      */
     public void run() {
         try {
             doRun();
 
-        } catch (Exception ex) {
-            LOG.log(Level.SEVERE, "run()", ex); //Handle properly
+        } catch (Throwable ex) {
+            LOG.log(Level.SEVERE, "run()"); //Handle properly
         } finally {
             //call close if not dead already
             if (!dead) {
@@ -140,8 +140,7 @@ public abstract class Connection
     }//getConnectionData
 
     /**
-     * Closes the connection and its underlying i/o and network
-     * resources.<br>
+     * Closes the connection and its underlying i/o and network resources.<br>
      */
     public synchronized void close() {
         if (dead) {
@@ -178,7 +177,6 @@ public abstract class Connection
                 //handle
             }
 
-
             LOG.log(Level.FINE, "Closed " + this.toString() + " and inactive.");
         }
     }//close
@@ -192,11 +190,11 @@ public abstract class Connection
         return !dead;
     }//isClosed
 
-    /****** Event handling ****************/
-
     /**
-     * Method that registers a ConnectionListener with the
-     * Connection instance.
+     * **** Event handling ***************
+     */
+    /**
+     * Method that registers a ConnectionListener with the Connection instance.
      *
      * @param cl ConnectionListener to be registered.
      * @see ConnectionListener
@@ -206,8 +204,7 @@ public abstract class Connection
     }//addConnectionListener
 
     /**
-     * Method that removes a ConnectionListener from the
-     * Connection instance.
+     * Method that removes a ConnectionListener from the Connection instance.
      *
      * @param cl ConnectionListener to be removed.
      * @see ConnectionListener
@@ -216,11 +213,9 @@ public abstract class Connection
         listeners.remove(cl);
     }//removeConnectionListener
 
-
     /**
-     * Method called by the io subsystem to pass on a
-     * "low-level" event. It will be properly delegated to
-     * all registered listeners.
+     * Method called by the io subsystem to pass on a "low-level" event. It will
+     * be properly delegated to all registered listeners.
      *
      * @param ce ConnectionEvent to be processed.
      * @see ConnectionEvent

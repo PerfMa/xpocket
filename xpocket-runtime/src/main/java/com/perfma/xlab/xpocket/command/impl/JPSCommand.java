@@ -3,6 +3,7 @@ package com.perfma.xlab.xpocket.command.impl;
 import com.perfma.xlab.xpocket.localjvm.JvmPid;
 import com.perfma.xlab.xpocket.spi.command.CommandInfo;
 import com.perfma.xlab.xpocket.spi.process.XPocketProcess;
+import com.perfma.xlab.xpocket.utils.ProcessUtil;
 import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.attach.VirtualMachineDescriptor;
 
@@ -19,7 +20,9 @@ public class JPSCommand extends AbstractSystemCommand {
     public void invoke(XPocketProcess process) {
         List<String> out = new LinkedList<String>();
         for (JvmPid jvmPid : getLocalProcessList()) {
-            out.add("@|yellow " + jvmPid.getPid() + "|@ @|white " + jvmPid.getCommand() + " |@");
+            if(!jvmPid.getPid().equals(ProcessUtil.getCurrentPid())){
+                out.add("@|yellow " + jvmPid.getPid() + "|@ @|white " + jvmPid.getCommand() + " |@");
+            }
         }
         for (String s : out) {
             process.output(s);

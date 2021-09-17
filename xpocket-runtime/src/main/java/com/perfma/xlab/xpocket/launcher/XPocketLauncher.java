@@ -25,6 +25,9 @@ public class XPocketLauncher {
                     i++;
                     System.setProperty(Constants.RUN_MODE_KEY,
                             args[i].toUpperCase());
+                } else if("-simple".equals(arg)) {
+                    System.setProperty(Constants.XPOCKET_SIMPLE_MODE,
+                            "true");
                 } else {
                     argsForCore.add(arg);
                 }

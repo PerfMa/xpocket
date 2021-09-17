@@ -4,12 +4,15 @@ import com.perfma.xlab.xpocket.spi.command.AbstractXPocketCommand;
 import com.perfma.xlab.xpocket.spi.context.SessionContext;
 import com.perfma.xlab.xpocket.spi.process.XPocketProcess;
 import com.perfma.xlab.xpocket.spi.process.XPocketProcessAction;
+import com.perfma.xlab.xpocket.utils.TerminalUtil;
 import com.perfma.xlab.xpocket.utils.XPocketConstants;
 import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.attach.VirtualMachineDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.LockSupport;
 import org.apache.commons.net.telnet.TelnetClient;
 import org.apache.commons.net.telnet.TelnetNotificationHandler;
 
@@ -68,21 +71,24 @@ public class JavaAgentCommandAdaptor extends AbstractXPocketCommand implements R
     }
 
     public String detach(XPocketProcess process) throws IOException {
-        telnet.disconnect();
+        try {
+            telnet.getOutputStream().write("quit".getBytes());
+            telnet.getOutputStream().write(TerminalUtil.lineSeparator.getBytes());
+            telnet.getOutputStream().flush();
+            telnet.disconnect();
+        } catch (Throwable ex) {
+            //ignore it
+        }
         this.attachStatus = false;
         process.end();
         return "OK";
     }
 
     public String attach(XPocketProcess process, String pid) {
-        try {
-            this.process = process;
-            int port = DEFALUT_PORT;
-            String agentPath = XPOCKET_HOME + "/agent/" + XPOCKET_AGENT_JAR;
-            return attach(pid, port, agentPath);
-        } finally {
-            this.process = null;
-        }
+        this.process = process;
+        int port = DEFALUT_PORT;
+        String agentPath = XPOCKET_HOME + "/agent/" + XPOCKET_AGENT_JAR;
+        return attach(pid, port, agentPath);
     }
 
     private String attach(String pid, int port, String agentPath) {
@@ -102,10 +108,10 @@ public class JavaAgentCommandAdaptor extends AbstractXPocketCommand implements R
                 virtualMachine = VirtualMachine.attach(virtualMachineDescriptor);
             }
 
-            if(virtualMachine == null) {
+            if (virtualMachine == null) {
                 return pid + " not found!";
             }
-            
+
             String loadOption = "XPOCKET_HOME=%s;XPOCKET_PLUGIN_PATH=%s;XPOCKET_CONFIG_PATH=%s;port=%s;XPOCKET_ONLY_AGENT=true";
             loadOption = String.format(loadOption,
                     URLEncoder.encode(XPOCKET_HOME, "UTF-8"),
@@ -113,7 +119,7 @@ public class JavaAgentCommandAdaptor extends AbstractXPocketCommand implements R
                     URLEncoder.encode(XPOCKET_CONFIG_PATH, "UTF-8"), port);
 
             virtualMachine.loadAgent(agentPath, loadOption);
-
+            LockSupport.parkNanos(TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS));
             startTelnet("127.0.0.1", port);
             this.attachStatus = true;
         } catch (Throwable ex) {
@@ -136,7 +142,7 @@ public class JavaAgentCommandAdaptor extends AbstractXPocketCommand implements R
         try {
             int ret_read = 0, index = 0;
             char[] line = new char[1024];
-
+            boolean print = false;
             LOOP:
             for (;;) {
                 ret_read = instr.read();
@@ -152,7 +158,8 @@ public class JavaAgentCommandAdaptor extends AbstractXPocketCommand implements R
                 switch (ret_read) {
                     case '\n':
                         String lineStr = new String(line, 0, index);
-                        if (!lineStr.trim().equalsIgnoreCase(process.getCmd())) {
+                        if (!lineStr.trim().equalsIgnoreCase(process.getCmd()) 
+                                && print) {
                             process.output(lineStr + "\n");
                         }
                         index = 0;
@@ -161,6 +168,7 @@ public class JavaAgentCommandAdaptor extends AbstractXPocketCommand implements R
                         line = put(line, index++, (char) ret_read);
                         String flag = new String(line, 0, index);
                         if (flag.contains("XPocket [")) {
+                            print = true;
                             process.end();
                             process = null;
                             index = 0;
@@ -172,7 +180,7 @@ public class JavaAgentCommandAdaptor extends AbstractXPocketCommand implements R
 
             }
         } catch (IOException e) {
-            process.output("Exception while reading socket:" + e.getMessage());
+            //process.output("Exception while reading socket:" + e.getMessage());
         }
 
         try {

@@ -18,6 +18,7 @@
         <module>xpocket-bridge</module>
         <module>xpocket-agent</module>
         <module>xpocket-jline</module>
+        <module>xpocket-tools</module>
     </modules>
 
     <properties>
