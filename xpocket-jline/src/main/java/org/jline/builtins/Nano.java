@@ -62,7 +62,6 @@ import org.jline.utils.AttributedStyle;
 import org.jline.utils.Display;
 import org.jline.utils.Status;
 import org.jline.utils.InfoCmp.Capability;
-import org.mozilla.universalchardet.UniversalDetector;
 
 import static org.jline.keymap.KeyMap.KEYMAP_LENGTH;
 import static org.jline.keymap.KeyMap.alt;
@@ -263,17 +262,17 @@ public class Nano implements Editor {
                 bos.write(buffer, 0, remaining);
             }
             byte[] bytes = bos.toByteArray();
-
-            try {
-                UniversalDetector detector = new UniversalDetector(null);
-                detector.handleData(bytes, 0, bytes.length);
-                detector.dataEnd();
-                if (detector.getDetectedCharset() != null) {
-                    charset = Charset.forName(detector.getDetectedCharset());
-                }
-            } catch (Throwable t) {
-                // Ignore
-            }
+//
+//            try {
+//                UniversalDetector detector = new UniversalDetector(null);
+//                detector.handleData(bytes, 0, bytes.length);
+//                detector.dataEnd();
+//                if (detector.getDetectedCharset() != null) {
+//                    charset = Charset.forName(detector.getDetectedCharset());
+//                }
+//            } catch (Throwable t) {
+//                // Ignore
+//            }
 
             // TODO: detect format, do not eat last newline
             try (BufferedReader reader = new BufferedReader(

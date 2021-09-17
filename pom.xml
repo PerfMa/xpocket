@@ -69,30 +69,9 @@
                 <version>1.18</version>
             </dependency>
             <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-core</artifactId>
-                <version>1.2.3</version>
-            </dependency>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>1.2.3</version>
-            </dependency>
-            <dependency>
-                <groupId>com.taobao.text</groupId>
-                <artifactId>text-ui</artifactId>
-                <version>0.0.2</version>
-            </dependency>
-            <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>2.10.0</version>
-            </dependency>
-            <dependency>
-                <groupId>com.googlecode.juniversalchardet</groupId>
-                <artifactId>juniversalchardet</artifactId>
-                <version>1.0.3</version>
-                <scope>provided</scope>
             </dependency>
             
             <dependency>
