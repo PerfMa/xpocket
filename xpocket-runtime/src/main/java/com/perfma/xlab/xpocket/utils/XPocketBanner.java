@@ -20,6 +20,7 @@ public class XPocketBanner {
     static {
         try {
             String logoText = IOUtils.toString(new FileInputStream(LOGO_LOCATION),Charset.defaultCharset());
+            logoText = logoText.replaceAll("\r\n", "\n");
             String[] elements = logoText.split("\n");
             int /*高度*/h = 5,/*字符数*/c = 7,/*宽度*/w = 8;
             StringBuilder logoBuilder = new StringBuilder(logoText.length());

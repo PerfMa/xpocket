@@ -19,7 +19,7 @@ public class XPocketConstants {
     public static final String PATH = USER_HOME + File.separator + ".xpocket" + File.separator + ".history" + File.separator;
 
     public static final String[] XPOCKET_COMMANDS = {"Echo","Attach","Detach","History", "Cd", "Help", "ListPlugins", "JPS", "Quit", "Session", "Sys", "Top", "Use", "Split", 
-        "Trim", "Grep", "Version", "Clear"};
+        "Trim", "Grep", "Version", "Clear","Kill"};
 
     public static final String XPOCKET_COMMAND_PACKAGE = "com.perfma.xlab.xpocket.command.impl.";
 

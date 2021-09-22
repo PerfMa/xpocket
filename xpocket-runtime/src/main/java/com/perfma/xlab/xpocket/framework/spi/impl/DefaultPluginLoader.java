@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.InputStreamReader;
+import java.lang.instrument.Instrumentation;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.*;
@@ -40,7 +41,12 @@ public class DefaultPluginLoader extends DefaultNamedObject implements PluginLoa
     private final HashMap<String, FrameworkPluginContext> pluginMap = new HashMap<>();
 
     @Override
-    public boolean loadPlugins(String resouceName) {
+    public boolean loadPlugins(String resouceName, boolean isOnLoad, Instrumentation inst) {
+        return loadPlugins(resouceName);
+    }
+
+    @Override
+    public boolean loadPlugins(String resourceName) {
         try {
             File pluginDir = new File(PLUGIN_PATH);
             File[] plugins = pluginDir.listFiles(new FilenameFilter() {
@@ -60,7 +66,12 @@ public class DefaultPluginLoader extends DefaultNamedObject implements PluginLoa
                         = new XPocketPluginClassLoader(
                                 new URL[]{plugin.toURI().toURL()},
                                 DefaultPluginLoader.class.getClassLoader());
-                URL pluginDef = pluginLoader.findResource(resouceName);
+                URL pluginDef = pluginLoader.findResource(resourceName);
+                
+                if(pluginDef == null) {
+                    System.out.println(String.format("Error : resource %s in %s is not exist!", resourceName,plugin.getName()));
+                }
+                
                 try (InputStreamReader reader
                         = new InputStreamReader(pluginDef.openStream(),
                                 Charset.forName("UTF-8"))) {
@@ -177,8 +188,15 @@ public class DefaultPluginLoader extends DefaultNamedObject implements PluginLoa
                                             = (CommandInfo[]) commandClass
                                                     .getAnnotationsByType(
                                                             CommandInfo.class);
+                                    
+                                    //collect commandlist infomation
+                                    CommandList[] lists
+                                            = (CommandList[]) commandClass
+                                                    .getAnnotationsByType(
+                                                            CommandList.class);
                                     //优先判断是否存在注解
-                                    if(infos == null || infos.length == 0){   
+                                    if((infos == null || infos.length == 0) 
+                                            && (lists == null || lists.length == 0)){   
                                         continue; 
                                     }
                                     
@@ -195,11 +213,7 @@ public class DefaultPluginLoader extends DefaultNamedObject implements PluginLoa
                                                         : commandObject));
                                     }
 
-                                    //collect commandlist infomation
-                                    CommandList[] lists
-                                            = (CommandList[]) commandClass
-                                                    .getAnnotationsByType(
-                                                            CommandList.class);
+                                    
                                     for (CommandList list : lists) {
                                         String[] names = list.names();
                                         String[] usages = list.usage();

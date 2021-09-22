@@ -432,7 +432,7 @@ public class TelnetIO {
 
             out.close();
         } catch (IOException ex) {
-            LOG.log(Level.SEVERE, "closeOutput()", ex);
+            LOG.log(Level.SEVERE, "closeOutput()");
             //handle?
         }
     }//close

@@ -14,7 +14,7 @@ import java.util.Properties;
  */
 public class XPocketAgentLauncher {
 
-    private static final String[] DEFS = {"xpocket.def"};
+    private static final String[] DEFS = {"META-INF/xpocket.def"};
     
     public static void start(Properties args,Instrumentation inst,boolean isOnLoad) {
         

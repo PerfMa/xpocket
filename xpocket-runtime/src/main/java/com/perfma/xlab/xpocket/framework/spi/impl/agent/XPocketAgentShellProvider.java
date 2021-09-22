@@ -23,6 +23,8 @@ import com.perfma.xlab.xpocket.utils.LogoPrinter;
 import com.perfma.xlab.xpocket.utils.TerminalUtil;
 import com.perfma.xlab.xpocket.utils.XPocketConstants;
 import com.sun.tools.attach.AgentLoadException;
+import java.io.EOFException;
+import java.io.IOError;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.instrument.Instrumentation;
@@ -52,33 +54,32 @@ import org.jline.terminal.Terminal;
 public class XPocketAgentShellProvider implements ShellProvider {
 
     private Telnet telnetd;
-    
-    private XPocketLineReader reader;
-    
+
     private final boolean isOnLoad;
-    
+
     private final Instrumentation inst;
 
-    public XPocketAgentShellProvider(boolean isOnLoad,Instrumentation inst){
+    private volatile boolean initStatus = false;
+
+    public XPocketAgentShellProvider(boolean isOnLoad, Instrumentation inst) {
         this.isOnLoad = isOnLoad;
         this.inst = inst;
     }
-    
+
     public void setTelnetd(Telnet telnetd) {
         this.telnetd = telnetd;
     }
 
     @Override
     public void shell(Terminal terminal, Map<String, String> environment) {
-        
+
         DefaultXPocketProcess systemProcess = new DefaultXPocketProcess("XPocket", null);
         systemProcess.setOutputStream(new PrintStream(terminal.output()));
-        
-        
+
         try {
-            reader = new XPocketLineReader(terminal);
+            XPocketLineReader reader = new XPocketLineReader(terminal);
             reader.variable(LineReader.HISTORY_FILE, XPocketConstants.PATH + ".history");
-            xpocketInit("META-INF/xpocket.def", systemProcess);
+            xpocketInit("META-INF/xpocket.def", systemProcess,reader);
             List<Completer> completers = new LinkedList<>();
             ParamsCompleter paramsCompleter = new ParamsCompleter();
             registryParamCompleter(paramsCompleter);
@@ -87,11 +88,11 @@ public class XPocketAgentShellProvider implements ShellProvider {
             completers.add(new NullCompleter());
             reader.setCompleter(new AggregateCompleter(completers));
             reader.setHistory(new DefaultHistory(reader));
-            for (; ; ) {
+            for (;;) {
                 try {
-                    waitForCommands(systemProcess);
+                    waitForCommands(systemProcess,reader);
                 } catch (UserInterruptException ex) {
-                    if (doubleCheckCtrlCQuit()) {
+                    if (doubleCheckCtrlCQuit(reader)) {
                         systemProcess.output("\nBye.");
                         break;
                     }
@@ -102,19 +103,26 @@ public class XPocketAgentShellProvider implements ShellProvider {
         } catch (InterruptedException ex) {
             //ignore it
         } catch (Throwable ex) {
-            ex.printStackTrace();
+            //ignore it
         }
     }
-    
+
     /**
      * wait For Command
      *
      * @throws EndOfInputException
      */
-    private void waitForCommands(DefaultXPocketProcess systemProcess) throws EndOfInputException,InterruptedException {
+    private void waitForCommands(DefaultXPocketProcess systemProcess,XPocketLineReader reader) throws EndOfInputException, InterruptedException {
         LOOP:
-        for (; ; ) {
-            String line = TerminalUtil.readLine(reader, XPocketStatusContext.instance.line());
+        for (;;) {
+            String line = null;
+
+            try {
+                line = TerminalUtil.readLine(reader, XPocketStatusContext.instance.line());
+            } catch (IOError ex) {
+                throw new EndOfInputException();
+            }
+
             if (line == null) {
                 break;
             }
@@ -132,11 +140,11 @@ public class XPocketAgentShellProvider implements ShellProvider {
                     throw new EndOfInputException();
                 case "stop":
                     try {
-                        telnetd.telnetd(new String[]{"telnetd","stop"});
-                    } catch (Throwable ex) {
-                        //ignore it
-                    }
-                    break LOOP;
+                    telnetd.telnetd(new String[]{"telnetd", "stop"});
+                } catch (Throwable ex) {
+                    //ignore it
+                }
+                break LOOP;
                 default:
                     break;
             }
@@ -146,7 +154,7 @@ public class XPocketAgentShellProvider implements ShellProvider {
                 if (CommandProcessor.solutionMap.containsKey(line.trim())) {
                     infos = new DefaultProcessInfo[]{CommandProcessor.solutionMap.get(line.trim())};
                 } else {
-                    infos = buildProcessInfo(line, systemProcess);
+                    infos = buildProcessInfo(line, systemProcess,reader);
                 }
 
                 if (infos != null) {
@@ -174,7 +182,7 @@ public class XPocketAgentShellProvider implements ShellProvider {
      * @param line
      * @param systemProcess
      */
-    private DefaultProcessInfo[] buildProcessInfo(String line, DefaultXPocketProcess systemProcess) {
+    private DefaultProcessInfo[] buildProcessInfo(String line, DefaultXPocketProcess systemProcess,XPocketLineReader reader) {
         // 当前 plugin 上下文
         FrameworkPluginContext pluginContext = (FrameworkPluginContext) XPocketStatusContext.instance.currentPlugin();
         if (pluginContext == null) {
@@ -241,37 +249,35 @@ public class XPocketAgentShellProvider implements ShellProvider {
      *
      * @param def
      */
-    private void xpocketInit(String def, DefaultXPocketProcess systemProcess) {
-        systemProcess.output("@|green *** Welcome to XPocket-Cli|@ @|green ***|@");
-        systemProcess.output(TerminalUtil.lineSeparator);
-        LogoPrinter.print(systemProcess);
-        systemProcess.output(TerminalUtil.lineSeparator);
-        systemProcess.output("@|green Initiator : PerfMa |@");
-        systemProcess.output("@|green version   : " + XPocketConstants.VERSION + " |@");
-        systemProcess.output("@|green site      : " + XPocketConstants.CLUB + " |@");
-        systemProcess.output("@|green github    : " + XPocketConstants.GITHUB + " |@");
-        systemProcess.output(TerminalUtil.lineSeparator);
+    private synchronized void xpocketInit(String def, DefaultXPocketProcess systemProcess,XPocketLineReader reader) {
+        TerminalUtil.printStart(systemProcess);
 
-        // 初始化 System plugin
-        DefaultPluginContext sysPluginContext = initSystemPlugin();
-        PluginManager.addPlugin(sysPluginContext);
+        if (!initStatus) {
+            // 初始化 System plugin
+            DefaultPluginContext sysPluginContext = initSystemPlugin(reader);
+            PluginManager.addPlugin(sysPluginContext);
 
-        // 加载默认实现的插件
-        PluginManager.loadPlugins(def,isOnLoad,inst);
+            // 加载默认实现的插件
+            PluginManager.loadPlugins(def, isOnLoad, inst);
 
-        // 注册命令
-        Set<FrameworkPluginContext> plugins = PluginManager.getAvailablePlugins();
-        CommandManager.addCommand(plugins);
+            // 注册命令
+            Set<FrameworkPluginContext> plugins = PluginManager.getAvailablePlugins();
+            CommandManager.addCommand(plugins);
+            initStatus = true;
+        }
 
         //切换到系统插件
         FrameworkPluginContext pluginContext = PluginManager.getPlugin(XPocketConstants.SYSTEM_PLUGIN_NAME, XPocketConstants.SYSTEM_PLUGIN_NS);
         pluginContext.init(systemProcess);
         XPocketStatusContext.open(pluginContext, systemProcess);
-        TerminalUtil.printHelp(systemProcess, pluginContext);
+        if(!TerminalUtil.SIMPLE_MODE) {
+            TerminalUtil.printHelp(systemProcess, pluginContext);
+        }
         TerminalUtil.printTail(systemProcess, null);
     }
 
-    private DefaultPluginContext initSystemPlugin() {
+    private DefaultPluginContext initSystemPlugin(XPocketLineReader reader) {
+
         DefaultPluginContext sysPluginContext = new DefaultPluginContext();
         sysPluginContext.setName(XPocketConstants.SYSTEM_PLUGIN_NAME);
         sysPluginContext.setNamespace(XPocketConstants.SYSTEM_PLUGIN_NS);
@@ -295,10 +301,10 @@ public class XPocketAgentShellProvider implements ShellProvider {
                 //collect commandinfo information
                 CommandInfo[] infos
                         = (CommandInfo[]) pluginClass
-                        .getAnnotationsByType(CommandInfo.class);
+                                .getAnnotationsByType(CommandInfo.class);
                 for (CommandInfo info : infos) {
                     cmdMap.put(info.name(),
-                            new DefaultCommandContext(info.name(),info.shortName(), info.usage(), info.index(),
+                            new DefaultCommandContext(info.name(), info.shortName(), info.usage(), info.index(),
                                     commandObject));
                 }
             } catch (Throwable ex) {
@@ -310,7 +316,7 @@ public class XPocketAgentShellProvider implements ShellProvider {
         return sysPluginContext;
     }
 
-    private boolean doubleCheckCtrlCQuit() {
+    private boolean doubleCheckCtrlCQuit(XPocketLineReader reader) {
         try {
             String line = reader.readLine("Quit XPocket? (N/Y,Default:N) : ");
             return "y".equalsIgnoreCase(line);
@@ -323,8 +329,8 @@ public class XPocketAgentShellProvider implements ShellProvider {
         Set<String> plugins = new TreeSet<>();
         PluginManager.getAllPlugins().forEach(plugin
                 -> plugins.add(
-                String.format("%s@%s", plugin.getName(),
-                        plugin.getNamespace().toUpperCase())));
+                        String.format("%s@%s", plugin.getName(),
+                                plugin.getNamespace().toUpperCase())));
         GroupStringCompleter pluginCompleter = new GroupStringCompleter(plugins, "PLUGIN");
         paramsCompleter.registry(XPocketConstants.SYSTEM_PLUGIN_NAME + ".use@" + XPocketConstants.SYSTEM_PLUGIN_NS.toUpperCase(), pluginCompleter);
         paramsCompleter.registry(XPocketConstants.SYSTEM_PLUGIN_NAME + ".use", pluginCompleter);
