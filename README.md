@@ -22,7 +22,7 @@
 * [XPocket plugin Perf](https://github.com/PerfMa/xpocket-plugin-perf)
 * [XPocket plugin Arthas](https://github.com/PerfMa/xpocket-plugin-arthas)
 * [XPocket plugin VJMap](https://github.com/PerfMa/xpocket-plugin-vjmap)
-* [XPocket plugin VJMap](https://github.com/PerfMa/xpocket-plugin-vjtop)
+* [XPocket plugin VJTop](https://github.com/PerfMa/xpocket-plugin-vjtop)
 
 
 ## XPocket在线教程
@@ -49,11 +49,11 @@ cd simulator
 sh run.sh
 ```
 
-### 2.下载xpocket，然后解压并运行（注：如果您当前的jdk版本大于jdk8，请使用xpocket_jdk9+.sh）
+### 2.下载xpocket，然后解压并运行
 ```bash
 wget https://a.perfma.net/xpocket/download/XPocket.tar.gz
 tar -xvf  XPocket.tar.gz
-sh xpocket/xpocket_jdk8.sh
+sh xpocket/xpocket.sh
 ```
 启动成功后如下所示
 ![plugins](resourse/start.png)
@@ -109,6 +109,24 @@ XPocket退出插件的方式很简单，只需要使用命令 `cd` 即可，cd�
 
 ![quit](resourse/quit.jpg)
 
+## 插件模式
+### 1. telnet server模式
+```bash
+sh xpocket.sh -run_mode telnet -port 9527
+```
+- 该模式会启动一个静默模式的XPocket，以对应端口的Telnet Server接受外部链接并使用，适用于远程执行操作的场景。
+
+### 2. run once 模式
+```bash
+sh xpocket.sh -run_mode once "echo test"
+```
+- 该模式是启动XPocket运行完指定命令以后直接退出，适用于外部调用完成单次操作的场景。
+
+### 3. Java Agent模式
+```bash
+sh xpocket.sh -run_mode agent-launcher -pid 1 -port 9527
+```
+- 该模式与telnet模式类似，但是是将XPocket整体作为一个Java Agent挂载到目标进程上运行，适用于容器类场景，并且可以获取更多JVM运行时信息。
 
 ## 插件开发
 详情请见[开发者指南](https://xpocket.perfma.com/docs/developer/)
@@ -129,7 +147,7 @@ Tips:
 ```
 更多操作以及介绍请参考[官方介绍](https://docs.oracle.com/javase/jp/8/docs/serviceabilityagent/sun/jvm/hotspot/HSDB.html)
 
-[github](https://github.com/perfma/xpocket-plugin-hsdb)
+[插件仓库](https://github.com/perfma/xpocket-plugin-hsdb)
 
 [插件概况](https://plugin.xpocket.perfma.com/plugin/54)
 
@@ -151,7 +169,7 @@ Java调试器（JDB）是Java类在命令行中调试程序的工具， 它实�
 ```
 更多操作以及介绍请参考[官方介绍](https://docs.oracle.com/javase/8/docs/technotes/tools/windows/jdb.html)
 
-[github](https://github.com/perfma/xpocket-plugin-jdb)
+[插件仓库](https://github.com/perfma/xpocket-plugin-jdb)
 
 [插件概况](https://plugin.xpocket.perfma.com/plugin/56)
 
@@ -186,7 +204,7 @@ analyze -p [pid] （-p 指定进程采集热点）
 analyze -detail  查看进程CPU热点抓取结果
 同时支持perf原生的命令和参数，并且针对java程序集成了perf-map-agent 这个工具，可以协助显示java的调用栈信息.具体使用方式见命令的帮助信息(如 help analyze)
 
-[github](https://github.com/perfma/xpocket-plugin-perf)
+[插件仓库](https://github.com/perfma/xpocket-plugin-perf)
 
 [插件概况](https://plugin.xpocket.perfma.com/plugin/57)
 
@@ -205,7 +223,8 @@ Arthas 是Alibaba开源的Java诊断工具，深受开发者喜爱，支持JDK 6
 
 XPocket管控了Arthas在attach进程之前的输入输出，attach之后的具体使用请参考[Arthas官方文档](https://arthas.aliyun.com/doc/)
 
-[github](https://github.com/alibaba/arthas)
+[Arthas](https://github.com/alibaba/arthas)
+[插件仓库](https://github.com/perfma/xpocket-plugin-arthas)
 
 [插件概况](https://plugin.xpocket.perfma.com/plugin/52)
 
@@ -225,7 +244,7 @@ JConsole 是一个内置Java性能分析器，用于对JVM中内存，线程和�
 
 注：插件化后的JConsole相比gui版本的JConsole在显示与操作上有所区别，但是数据的采集方式是一样的。
 
-[github](https://github.com/perfma/xpocket-plugin-jconsole)
+[插件仓库](https://github.com/perfma/xpocket-plugin-jconsole)
 
 [插件概况](https://plugin.xpocket.perfma.com/plugin/55)
 
@@ -263,7 +282,8 @@ vjmap的原始思路来源于R大的TBJMap ，翻新后支持JDK8，支持Surviv
  
 ```
 
-[github](https://github.com/vipshop/vjtools/tree/master/vjmap)
+[VJMap](https://github.com/vipshop/vjtools/tree/master/vjmap)
+[插件仓库](https://github.com/perfma/xpocket-plugin-vjmap)
 
 [插件概况](https://plugin.xpocket.perfma.com/plugin/58)
 

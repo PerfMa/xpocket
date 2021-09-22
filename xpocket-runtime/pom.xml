@@ -5,17 +5,18 @@
     <parent>
         <groupId>com.perfma.xlab</groupId>
         <artifactId>xpocket-parent</artifactId>
-        <version>2.1.0-RELEASE</version>
+        <version>2.1.1-RELEASE</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>xpocket-runtime</artifactId>
     <packaging>jar</packaging>
-    <version>2.1.0-RELEASE</version>
+    
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
+    
     <dependencies>
         <dependency>
             <groupId>com.perfma.xlab</groupId>
