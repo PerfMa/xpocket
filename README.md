@@ -109,7 +109,7 @@ XPocket退出插件的方式很简单，只需要使用命令 `cd` 即可，cd�
 
 ![quit](resourse/quit.jpg)
 
-## 插件模式
+## 运行模式
 ### 1. telnet server模式
 ```bash
 sh xpocket.sh -run_mode telnet -port 9527
