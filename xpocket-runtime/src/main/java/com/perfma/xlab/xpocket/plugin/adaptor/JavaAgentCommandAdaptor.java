@@ -142,7 +142,7 @@ public class JavaAgentCommandAdaptor extends AbstractXPocketCommand implements R
         try {
             int ret_read = 0, index = 0;
             char[] line = new char[1024];
-            boolean print = false;
+            boolean print = false,firstLine = false;
             LOOP:
             for (;;) {
                 ret_read = instr.read();
@@ -156,11 +156,16 @@ public class JavaAgentCommandAdaptor extends AbstractXPocketCommand implements R
                 }
 
                 switch (ret_read) {
+                    case '\r':
                     case '\n':
                         String lineStr = new String(line, 0, index);
                         if (!lineStr.trim().equalsIgnoreCase(process.getCmd()) 
                                 && print) {
                             process.output(lineStr + "\n");
+                        }
+                        if(firstLine) {
+                            print = true;
+                            firstLine = false;
                         }
                         index = 0;
                         break;
@@ -168,7 +173,8 @@ public class JavaAgentCommandAdaptor extends AbstractXPocketCommand implements R
                         line = put(line, index++, (char) ret_read);
                         String flag = new String(line, 0, index);
                         if (flag.contains("XPocket [")) {
-                            print = true;
+                            firstLine = true;
+                            print = false;
                             process.end();
                             process = null;
                             index = 0;

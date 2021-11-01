@@ -1,6 +1,6 @@
 package com.perfma.xlab.xpocket.framework.spi.impl.agent;
 
-import com.perfma.xlab.xpocket.command.impl.AbstractSystemCommand;
+import com.perfma.xlab.xpocket.command.AbstractSystemCommand;
 import com.perfma.xlab.xpocket.completer.CommandCompleter;
 import com.perfma.xlab.xpocket.completer.GroupStringCompleter;
 import com.perfma.xlab.xpocket.completer.ParamsCompleter;

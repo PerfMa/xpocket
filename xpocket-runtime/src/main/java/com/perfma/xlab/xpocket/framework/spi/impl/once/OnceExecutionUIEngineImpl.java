@@ -1,6 +1,6 @@
 package com.perfma.xlab.xpocket.framework.spi.impl.once;
 
-import com.perfma.xlab.xpocket.command.impl.AbstractSystemCommand;
+import com.perfma.xlab.xpocket.command.AbstractSystemCommand;
 import com.perfma.xlab.xpocket.console.EndOfInputException;
 import com.perfma.xlab.xpocket.framework.spi.execution.pipeline.DefaultNode;
 import com.perfma.xlab.xpocket.framework.spi.execution.pipeline.DefaultProcessInfo;

@@ -1,5 +1,6 @@
 package com.perfma.xlab.xpocket.command.impl;
 
+import com.perfma.xlab.xpocket.command.AbstractSystemCommand;
 import com.perfma.xlab.xpocket.plugin.context.FrameworkPluginContext;
 import com.perfma.xlab.xpocket.plugin.manager.CommandManager;
 import com.perfma.xlab.xpocket.plugin.manager.PluginManager;

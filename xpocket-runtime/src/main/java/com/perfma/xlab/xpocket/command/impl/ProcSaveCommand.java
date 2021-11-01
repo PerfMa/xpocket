@@ -1,5 +1,6 @@
 package com.perfma.xlab.xpocket.command.impl;
 
+import com.perfma.xlab.xpocket.command.AbstractSystemCommand;
 import com.perfma.xlab.xpocket.framework.spi.execution.pipeline.DefaultProcessInfo;
 import com.perfma.xlab.xpocket.framework.spi.execution.pipeline.DefaultXPocketProcess;
 import com.perfma.xlab.xpocket.framework.spi.impl.CommandProcessor;

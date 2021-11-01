@@ -1,4 +1,4 @@
-package com.perfma.xlab.xpocket.command.impl;
+package com.perfma.xlab.xpocket.command;
 
 import com.perfma.xlab.xpocket.spi.command.AbstractXPocketCommand;
 import org.jline.reader.impl.LineReaderImpl;

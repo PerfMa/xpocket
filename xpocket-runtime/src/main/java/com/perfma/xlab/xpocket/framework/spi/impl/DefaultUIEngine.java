@@ -1,6 +1,6 @@
 package com.perfma.xlab.xpocket.framework.spi.impl;
 
-import com.perfma.xlab.xpocket.command.impl.AbstractSystemCommand;
+import com.perfma.xlab.xpocket.command.AbstractSystemCommand;
 import com.perfma.xlab.xpocket.completer.CommandCompleter;
 import com.perfma.xlab.xpocket.completer.GroupStringCompleter;
 import com.perfma.xlab.xpocket.completer.ParamsCompleter;
@@ -241,6 +241,7 @@ public class DefaultUIEngine extends DefaultNamedObject implements UIEngine {
         sysPluginContext.setTips(tips);
 
         HashMap<String, DefaultCommandContext> cmdMap = new HashMap<>();
+        
         for (String cmd : XPocketConstants.XPOCKET_COMMANDS) {
             try {
                 Class pluginClass = Class.forName(XPocketConstants.XPOCKET_COMMAND_PACKAGE + cmd
