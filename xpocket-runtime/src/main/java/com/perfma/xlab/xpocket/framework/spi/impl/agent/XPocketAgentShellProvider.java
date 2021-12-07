@@ -11,6 +11,7 @@ import com.perfma.xlab.xpocket.framework.spi.execution.pipeline.DefaultXPocketPr
 import com.perfma.xlab.xpocket.framework.spi.impl.CommandProcessor;
 import com.perfma.xlab.xpocket.framework.spi.impl.DefaultCommandContext;
 import com.perfma.xlab.xpocket.framework.spi.impl.DefaultPluginContext;
+import com.perfma.xlab.xpocket.framework.spi.impl.DefaultUIEngine;
 import com.perfma.xlab.xpocket.framework.spi.impl.XPocketStatusContext;
 import com.perfma.xlab.xpocket.linereader.XPocketLineReader;
 import com.perfma.xlab.xpocket.plugin.context.FrameworkPluginContext;
@@ -19,13 +20,15 @@ import com.perfma.xlab.xpocket.plugin.manager.ExecutionManager;
 import com.perfma.xlab.xpocket.plugin.manager.PluginManager;
 import com.perfma.xlab.xpocket.spi.command.CommandInfo;
 import com.perfma.xlab.xpocket.spi.command.XPocketCommand;
-import com.perfma.xlab.xpocket.utils.LogoPrinter;
+import com.perfma.xlab.xpocket.utils.JarUtils;
 import com.perfma.xlab.xpocket.utils.TerminalUtil;
 import com.perfma.xlab.xpocket.utils.XPocketConstants;
 import com.sun.tools.attach.AgentLoadException;
-import java.io.EOFException;
+import java.io.BufferedReader;
 import java.io.IOError;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.lang.instrument.Instrumentation;
 import java.util.ArrayList;
@@ -79,7 +82,7 @@ public class XPocketAgentShellProvider implements ShellProvider {
         try {
             XPocketLineReader reader = new XPocketLineReader(terminal);
             reader.variable(LineReader.HISTORY_FILE, XPocketConstants.PATH + ".history");
-            xpocketInit("META-INF/xpocket.def", systemProcess,reader);
+            xpocketInit("META-INF/xpocket.def", systemProcess, reader);
             List<Completer> completers = new LinkedList<>();
             ParamsCompleter paramsCompleter = new ParamsCompleter();
             registryParamCompleter(paramsCompleter);
@@ -90,7 +93,7 @@ public class XPocketAgentShellProvider implements ShellProvider {
             reader.setHistory(new DefaultHistory(reader));
             for (;;) {
                 try {
-                    waitForCommands(systemProcess,reader);
+                    waitForCommands(systemProcess, reader);
                 } catch (UserInterruptException ex) {
                     if (doubleCheckCtrlCQuit(reader)) {
                         systemProcess.output("\nBye.");
@@ -112,7 +115,7 @@ public class XPocketAgentShellProvider implements ShellProvider {
      *
      * @throws EndOfInputException
      */
-    private void waitForCommands(DefaultXPocketProcess systemProcess,XPocketLineReader reader) throws EndOfInputException, InterruptedException {
+    private void waitForCommands(DefaultXPocketProcess systemProcess, XPocketLineReader reader) throws EndOfInputException, InterruptedException {
         LOOP:
         for (;;) {
             String line = null;
@@ -154,7 +157,7 @@ public class XPocketAgentShellProvider implements ShellProvider {
                 if (CommandProcessor.solutionMap.containsKey(line.trim())) {
                     infos = new DefaultProcessInfo[]{CommandProcessor.solutionMap.get(line.trim())};
                 } else {
-                    infos = buildProcessInfo(line, systemProcess,reader);
+                    infos = buildProcessInfo(line, systemProcess, reader);
                 }
 
                 if (infos != null) {
@@ -182,7 +185,7 @@ public class XPocketAgentShellProvider implements ShellProvider {
      * @param line
      * @param systemProcess
      */
-    private DefaultProcessInfo[] buildProcessInfo(String line, DefaultXPocketProcess systemProcess,XPocketLineReader reader) {
+    private DefaultProcessInfo[] buildProcessInfo(String line, DefaultXPocketProcess systemProcess, XPocketLineReader reader) {
         // 当前 plugin 上下文
         FrameworkPluginContext pluginContext = (FrameworkPluginContext) XPocketStatusContext.instance.currentPlugin();
         if (pluginContext == null) {
@@ -249,7 +252,7 @@ public class XPocketAgentShellProvider implements ShellProvider {
      *
      * @param def
      */
-    private synchronized void xpocketInit(String def, DefaultXPocketProcess systemProcess,XPocketLineReader reader) {
+    private synchronized void xpocketInit(String def, DefaultXPocketProcess systemProcess, XPocketLineReader reader) {
         TerminalUtil.printStart(systemProcess);
 
         if (!initStatus) {
@@ -270,7 +273,7 @@ public class XPocketAgentShellProvider implements ShellProvider {
         FrameworkPluginContext pluginContext = PluginManager.getPlugin(XPocketConstants.SYSTEM_PLUGIN_NAME, XPocketConstants.SYSTEM_PLUGIN_NS);
         pluginContext.init(systemProcess);
         XPocketStatusContext.open(pluginContext, systemProcess);
-        if(!TerminalUtil.SIMPLE_MODE) {
+        if (!TerminalUtil.SIMPLE_MODE) {
             TerminalUtil.printHelp(systemProcess, pluginContext);
         }
         TerminalUtil.printTail(systemProcess, null);
@@ -290,10 +293,10 @@ public class XPocketAgentShellProvider implements ShellProvider {
         sysPluginContext.setTips(tips);
 
         HashMap<String, DefaultCommandContext> cmdMap = new HashMap<>();
-        for (String cmd : XPocketConstants.XPOCKET_COMMANDS) {
-            try {
-                Class pluginClass = Class.forName(XPocketConstants.XPOCKET_COMMAND_PACKAGE + cmd
-                        + "Command");
+        try {
+            List<String> classes = JarUtils.findClassesInJarPackage(XPocketConstants.XPOCKET_COMMAND_PACKAGE);
+            for (String clazz : classes) {
+                Class pluginClass = Class.forName(clazz);
                 XPocketCommand commandObject
                         = (XPocketCommand) pluginClass.getConstructor().newInstance();
                 ((AbstractSystemCommand) commandObject).setReader(reader);
@@ -307,9 +310,9 @@ public class XPocketAgentShellProvider implements ShellProvider {
                             new DefaultCommandContext(info.name(), info.shortName(), info.usage(), info.index(),
                                     commandObject));
                 }
-            } catch (Throwable ex) {
-                //ignore
             }
+        } catch (Throwable ex) {
+            //ignore
         }
 
         sysPluginContext.setCommands(cmdMap);

@@ -17,6 +17,11 @@ public class DefaultExecutionEngine extends DefaultNamedObject implements Execut
     @Override
     public void invoke(XpocketProcessInfo info, LineReader reader) throws Throwable {
 
+        if(reader == null) {
+            invoke(info);
+            return;
+        }
+        
         ExecutionPipeLine pipeline = new ExecutionPipeLine(info.finalOutput());
 
         for (Node node : info.nodes()) {

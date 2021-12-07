@@ -18,7 +18,7 @@ public class XPocketLauncher {
                     Constants.DEFAULT_RUN_MODE);
         }
         
-        if(args != null && args.length > 2) {
+        if(args != null && args.length >= 2) {
             for(int i=0;i<args.length;i++) {
                 String arg = args[i];
                 if("-run_mode".equals(arg)) {

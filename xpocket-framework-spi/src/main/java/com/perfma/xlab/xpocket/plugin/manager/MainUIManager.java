@@ -17,7 +17,6 @@ public class MainUIManager {
     static {
         Map<String,UIEngine> UIs = ServiceLoaderUtils.loadServices(UIEngine.class);
         String run_mode = System.getProperty(Constants.RUN_MODE_KEY, Constants.DEFAULT_RUN_MODE).toUpperCase();
-        
         if(UIs.containsKey(run_mode)) {
             coreUI = UIs.get(run_mode);
         } else {
