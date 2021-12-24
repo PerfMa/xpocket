@@ -27,8 +27,6 @@ import java.util.Map;
 @CommandInfo(name = "scroll", usage = "scroll list \n scroll compile -name scrollname -ns scrollnamespace [-t type Default:groovy] [-output path] [-F file or script] \n scroll exec [-script -t type Default:groovy] [-F file or script]", index = 200)
 public class ScrollOperations extends AbstractSystemCommand {
 
-    private static final String SYS_FUNCS = "import com.perfma.xlab.xpocket.utils.XPocketCommandHelper;void exec(String cmd){XPocketCommandHelper.exec(cmd);};String execByResult(String cmd){return XPocketCommandHelper.execByResult(cmd);};void println(String content){XPocketCommandHelper.println(content);};";
-
     private static final ScrollCompiler compiler = new ScrollCompiler();
     private static final ScrollRunner runner = new ScrollRunner();
 
@@ -121,8 +119,6 @@ public class ScrollOperations extends AbstractSystemCommand {
                             }
                         }
 
-                        script = SYS_FUNCS + script;
-
                         Scroll scroll = new Scroll();
                         scroll.setName(scrollName);
                         scroll.setNamespace(scrollNamespace);
@@ -156,8 +152,6 @@ public class ScrollOperations extends AbstractSystemCommand {
                                     }
                                 }
                             }
-
-                            script = SYS_FUNCS + script;
 
                             runner.run(scriptName, script);
                         } else if (sourceFileName != null) {

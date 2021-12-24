@@ -5,7 +5,6 @@ import com.perfma.xlab.xpocket.framework.spi.execution.pipeline.DefaultXPocketPr
 import com.perfma.xlab.xpocket.framework.spi.impl.DefaultCommandContext;
 import com.perfma.xlab.xpocket.framework.spi.impl.DefaultPluginContext;
 import com.perfma.xlab.xpocket.framework.spi.impl.XPocketStatusContext;
-import com.perfma.xlab.xpocket.framework.spi.impl.agent.XPocketAgentShellProvider;
 import com.perfma.xlab.xpocket.plugin.context.FrameworkPluginContext;
 import com.perfma.xlab.xpocket.plugin.manager.CommandManager;
 import com.perfma.xlab.xpocket.plugin.manager.PluginManager;
@@ -21,6 +20,8 @@ import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 import javax.management.MBeanServer;
@@ -28,9 +29,6 @@ import javax.management.ObjectName;
 import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
-import org.jline.builtins.telnet.Telnet;
-import org.jline.terminal.Terminal;
-import org.jline.terminal.TerminalBuilder;
 
 /**
  *
@@ -39,17 +37,23 @@ import org.jline.terminal.TerminalBuilder;
 public class MXBeanUIEngineImpl extends MXBeanNamedObject implements UIEngine {
 
     private static final String DEFAULT_MXBEAN_PORT = "9528";
+    
+    private static final String DEFAULT_TIMEOUT = "-1";
 
     @Override
     public void start(String[] def, String[] args, Instrumentation inst) {
 
         try {
             String port = DEFAULT_MXBEAN_PORT;
+            String timeout = DEFAULT_TIMEOUT;
             for (int i = 0; i < args.length; i++) {
                 String arg = args[i];
                 switch (arg) {
                     case "-port":
                         port = args[++i];
+                        break;
+                    case "-timeout":
+                        timeout = args[++i];
                         break;
                 }
             }
@@ -78,6 +82,30 @@ public class MXBeanUIEngineImpl extends MXBeanNamedObject implements UIEngine {
 
             JMXServiceURL url = new JMXServiceURL(String.format("service:jmx:rmi:///jndi/rmi://localhost:%s/server", port));
 
+            try {
+                int timeoutInt = Integer.parseInt(timeout);
+                if(timeoutInt > 0) {
+                    xpocket.lastCall.set(System.currentTimeMillis());
+                    Executors.newSingleThreadScheduledExecutor(new ThreadFactory(){
+                        @Override
+                        public Thread newThread(Runnable r) {
+                            return new Thread(r,"xpocket-timeout-watchdog");
+                        }
+                    }).scheduleWithFixedDelay(new Runnable(){
+                        @Override
+                        public void run() {
+                            if(!xpocket.isRunning.get() 
+                                    && (System.currentTimeMillis() - xpocket.lastCall.get())/1000 > timeoutInt) {
+                                xpocket.stop();
+                                System.out.println(String.format("XPocket is quiet for timeout time : %s seconds,destroy itself!", timeoutInt));
+                            }
+                        }
+                    }, 5, timeoutInt, TimeUnit.SECONDS);
+                }
+            } catch (NumberFormatException ex) {
+                //ignore it
+            }
+            
             JMXConnectorServer cs = JMXConnectorServerFactory.newJMXConnectorServer(url, null, server);
             cs.start();
 

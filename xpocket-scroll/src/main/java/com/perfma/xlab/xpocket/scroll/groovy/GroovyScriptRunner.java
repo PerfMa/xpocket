@@ -1,5 +1,6 @@
 package com.perfma.xlab.xpocket.scroll.groovy;
 
+import static com.perfma.xlab.xpocket.scroll.groovy.GroovyScriptCompiler.SYS_FUNCS;
 import com.perfma.xlab.xpocket.scroll.run.ScrollScriptRunner;
 import groovy.lang.GroovyShell;
 import java.lang.reflect.Method;
@@ -27,6 +28,7 @@ public class GroovyScriptRunner extends GroovyName implements ScrollScriptRunner
 
     @Override
     public void run(String script) {
+        script = SYS_FUNCS + script;
         shell.evaluate(script);
     }
 

@@ -10,6 +10,8 @@ import org.codehaus.groovy.control.CompilerConfiguration;
  */
 public class GroovyScriptCompiler extends GroovyName implements ScrollScriptCompiler {
 
+    public static final String SYS_FUNCS = "import com.perfma.xlab.xpocket.utils.XPocketCommandHelper;void exec(String cmd){XPocketCommandHelper.exec(cmd);};String execByResult(String cmd){return XPocketCommandHelper.execByResult(cmd);};void println(String content){XPocketCommandHelper.println(content);};";
+    
     private static final BytesOutputCompiler compiler;
     
     static {
@@ -23,6 +25,7 @@ public class GroovyScriptCompiler extends GroovyName implements ScrollScriptComp
     
     @Override
     public List<byte[]> compile(String name,String script) {
+        script = SYS_FUNCS + script;
         return compiler.compile(name, script);
     }
 
