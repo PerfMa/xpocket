@@ -7,7 +7,7 @@
     <groupId>com.perfma.xlab</groupId>
     <artifactId>xpocket-parent</artifactId>
     <packaging>pom</packaging>
-    <version>2.1.1-RELEASE</version>
+    <version>2.1.2-alpha</version>
     
     <modules>
         <module>xpocket-framework-spi</module>
@@ -23,7 +23,7 @@
     </modules>
 
     <properties>
-        <project.version>2.1.1-RELEASE</project.version>
+        <project.version>2.1.2-alpha</project.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
