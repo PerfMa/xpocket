@@ -11,6 +11,8 @@ import java.util.List;
 public class XPocketLauncher {
 
     public static void main(String[] args) {
+        Constants.initSystemProperties();
+
         List<String> argsForCore = new ArrayList<>();
         
         if(System.getProperty(Constants.RUN_MODE_KEY) == null) {
