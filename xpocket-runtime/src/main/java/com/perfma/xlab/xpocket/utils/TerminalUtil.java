@@ -164,5 +164,5 @@ public class TerminalUtil {
     public static String readLine(LineReaderImpl reader, String prompt) {
         return reader.readLine(prompt);
     }
-    
+
 }

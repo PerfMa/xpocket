@@ -7,7 +7,7 @@
     <groupId>com.perfma.xlab</groupId>
     <artifactId>xpocket-parent</artifactId>
     <packaging>pom</packaging>
-    <version>2.1.1-RELEASE</version>
+    <version>2.1.2-alpha</version>
     
     <modules>
         <module>xpocket-framework-spi</module>
@@ -19,10 +19,11 @@
         <module>xpocket-agent</module>
         <module>xpocket-jline</module>
         <module>xpocket-tools</module>
+        <module>xpocket-scroll</module>
     </modules>
 
     <properties>
-        <project.version>2.1.1-RELEASE</project.version>
+        <project.version>2.1.2-alpha</project.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
@@ -57,6 +58,11 @@
                 <artifactId>xpocket-agent</artifactId>
                 <version>${project.version}</version>
             </dependency>
+           <dependency>
+                <groupId>com.perfma.xlab</groupId>
+                <artifactId>xpocket-scroll</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -72,6 +78,11 @@
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>2.10.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.groovy</groupId>
+                <artifactId>groovy</artifactId>
+                <version>3.0.9</version>
             </dependency>
             
             <dependency>

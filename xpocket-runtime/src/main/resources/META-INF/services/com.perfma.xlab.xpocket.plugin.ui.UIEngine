@@ -3,3 +3,4 @@ com.perfma.xlab.xpocket.framework.spi.impl.once.OnceExecutionUIEngineImpl
 com.perfma.xlab.xpocket.framework.spi.impl.agentlauncher.AgentLauncherUIEngineImpl
 com.perfma.xlab.xpocket.framework.spi.impl.agent.AgentUIEngineImpl
 com.perfma.xlab.xpocket.framework.spi.impl.telnet.TelnetUIEngineImpl
+com.perfma.xlab.xpocket.framework.spi.impl.mxbean.MXBeanUIEngineImpl

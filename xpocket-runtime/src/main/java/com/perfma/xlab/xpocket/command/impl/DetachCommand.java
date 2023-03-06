@@ -1,5 +1,6 @@
 package com.perfma.xlab.xpocket.command.impl;
 
+import com.perfma.xlab.xpocket.command.AbstractSystemCommand;
 import com.perfma.xlab.xpocket.spi.command.CommandInfo;
 import com.perfma.xlab.xpocket.spi.command.XPocketProcessTemplate;
 import com.perfma.xlab.xpocket.spi.context.SessionContext;

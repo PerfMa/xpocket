@@ -11,6 +11,8 @@ import java.util.List;
 public class XPocketLauncher {
 
     public static void main(String[] args) {
+        Constants.initSystemProperties();
+
         List<String> argsForCore = new ArrayList<>();
         
         if(System.getProperty(Constants.RUN_MODE_KEY) == null) {
@@ -18,7 +20,7 @@ public class XPocketLauncher {
                     Constants.DEFAULT_RUN_MODE);
         }
         
-        if(args != null && args.length > 2) {
+        if(args != null && args.length >= 2) {
             for(int i=0;i<args.length;i++) {
                 String arg = args[i];
                 if("-run_mode".equals(arg)) {

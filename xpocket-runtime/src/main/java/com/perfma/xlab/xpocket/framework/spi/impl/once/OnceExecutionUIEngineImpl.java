@@ -1,6 +1,5 @@
 package com.perfma.xlab.xpocket.framework.spi.impl.once;
 
-import com.perfma.xlab.xpocket.command.impl.AbstractSystemCommand;
 import com.perfma.xlab.xpocket.console.EndOfInputException;
 import com.perfma.xlab.xpocket.framework.spi.execution.pipeline.DefaultNode;
 import com.perfma.xlab.xpocket.framework.spi.execution.pipeline.DefaultProcessInfo;
@@ -16,6 +15,7 @@ import com.perfma.xlab.xpocket.plugin.manager.PluginManager;
 import com.perfma.xlab.xpocket.spi.command.CommandInfo;
 import com.perfma.xlab.xpocket.spi.command.XPocketCommand;
 import com.perfma.xlab.xpocket.plugin.ui.UIEngine;
+import com.perfma.xlab.xpocket.utils.JarUtils;
 import com.perfma.xlab.xpocket.utils.TerminalUtil;
 import com.perfma.xlab.xpocket.utils.XPocketConstants;
 import com.sun.tools.attach.AgentLoadException;
@@ -184,26 +184,25 @@ public class OnceExecutionUIEngineImpl extends OnceNamedObject implements UIEngi
         sysPluginContext.setTips(tips);
 
         HashMap<String, DefaultCommandContext> cmdMap = new HashMap<>();
-        for (String cmd : XPocketConstants.XPOCKET_COMMANDS) {
-            try {
-                Class pluginClass = Class.forName(XPocketConstants.XPOCKET_COMMAND_PACKAGE + cmd
-                        + "Command");
+        try {
+            List<String> classes = JarUtils.findClassesInJarPackage(XPocketConstants.XPOCKET_COMMAND_PACKAGE);
+            for (String clazz : classes) {
+                Class pluginClass = Class.forName(clazz);
                 XPocketCommand commandObject
                         = (XPocketCommand) pluginClass.getConstructor().newInstance();
-                ((AbstractSystemCommand) commandObject).setReader(null);
 
                 //collect commandinfo information
                 CommandInfo[] infos
                         = (CommandInfo[]) pluginClass
-                        .getAnnotationsByType(CommandInfo.class);
+                                .getAnnotationsByType(CommandInfo.class);
                 for (CommandInfo info : infos) {
                     cmdMap.put(info.name(),
-                            new DefaultCommandContext(info.name(),info.shortName(),info.usage(), info.index(),
+                            new DefaultCommandContext(info.name(), info.shortName(), info.usage(), info.index(),
                                     commandObject));
                 }
-            } catch (Throwable ex) {
-                //ignore
             }
+        } catch (Throwable ex) {
+            //ignore
         }
 
         sysPluginContext.setCommands(cmdMap);

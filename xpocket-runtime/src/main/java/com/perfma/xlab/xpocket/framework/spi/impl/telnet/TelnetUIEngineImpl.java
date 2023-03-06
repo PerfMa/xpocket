@@ -1,7 +1,6 @@
 package com.perfma.xlab.xpocket.framework.spi.impl.telnet;
 
 import com.perfma.xlab.xpocket.framework.spi.impl.agent.XPocketAgentShellProvider;
-import com.perfma.xlab.xpocket.framework.spi.impl.once.OnceNamedObject;
 import com.perfma.xlab.xpocket.plugin.ui.UIEngine;
 import java.lang.instrument.Instrumentation;
 import org.jline.builtins.telnet.Telnet;

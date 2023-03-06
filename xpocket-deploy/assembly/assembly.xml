@@ -68,6 +68,13 @@
                 <include>*</include>
             </includes>
         </fileSet>
+        <fileSet>
+            <directory>scrolls</directory>
+            <outputDirectory>scrolls</outputDirectory>
+            <includes>
+                <include>*</include>
+            </includes>
+        </fileSet>
     </fileSets>
     <files>
         <file>
