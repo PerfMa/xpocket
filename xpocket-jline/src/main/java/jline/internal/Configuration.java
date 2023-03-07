@@ -206,6 +206,14 @@ public class Configuration
         return getOsName().startsWith("windows");
     }
 
+    public static boolean isMac() {
+        return getOsName().contains("mac");
+    }
+
+    public static boolean isLinux() {
+        return getOsName().contains("nix")||getOsName().contains("nux")||getOsName().contains("aix");
+    }
+
     public static boolean isHpux() {
         return getOsName().startsWith("hp");
     }
