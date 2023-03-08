@@ -60,6 +60,8 @@ public class XPocketConstants {
 
     public static final Double JDK_8 = 1.8;
 
+    private static String xpocketScrollPath = System.getProperty(SCROLL_PATH);
+
     private XPocketConstants() {
     }
 
@@ -113,10 +115,14 @@ public class XPocketConstants {
         if (System.getProperty(CONFIG_PATH) == null) {
             System.setProperty(CONFIG_PATH, LOCAL_USER_HOME + File.separator + CONFIG_DIR + File.separator);
         }
+        if (System.getProperty(SCROLL_PATH) == null) {
+            xpocketScrollPath = System.getProperty(HOME_NAME) + File.separator + "scrolls" + File.separator;
+            System.setProperty(SCROLL_PATH, xpocketScrollPath);
+        }
     }
 
     public static String getXpocketScrollPath() {
-        return System.getProperty(SCROLL_PATH, System.getProperty(HOME_NAME) + File.separator + "scrolls" + File.separator);
+        return xpocketScrollPath;
     }
 
 }
