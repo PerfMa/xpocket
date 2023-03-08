@@ -2,6 +2,8 @@ package com.perfma.xlab.xpocket.launcher;
 
 import com.perfma.xlab.xpocket.plugin.manager.MainUIManager;
 import com.perfma.xlab.xpocket.plugin.util.Constants;
+import com.perfma.xlab.xpocket.utils.XPocketConstants;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +13,7 @@ import java.util.List;
 public class XPocketLauncher {
 
     public static void main(String[] args) {
-        Constants.initSystemProperties();
+        XPocketConstants.localInit();
 
         List<String> argsForCore = new ArrayList<>();
         

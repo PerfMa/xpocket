@@ -13,9 +13,9 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	<maven.deploy.skip>false</maven.deploy.skip>
-    </properties> 
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.deploy.skip>false</maven.deploy.skip>
+    </properties>
 
     <licenses>
         <license>
@@ -42,20 +42,20 @@
     <dependencies>
         <dependency>
             <groupId>com.perfma.xlab</groupId>
-	    <artifactId>xpocket-plugin-spi</artifactId>
-	    <version>2.1.0-RELEASE</version>
+            <artifactId>xpocket-plugin-spi</artifactId>
+            <version>2.1.0-RELEASE</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.perfma.xlab</groupId>
-	    <artifactId>xpocket-framework-spi</artifactId>
-	    <version>2.1.0-RELEASE</version>
-	    <scope>provided</scope>
+            <artifactId>xpocket-framework-spi</artifactId>
+            <version>2.1.0-RELEASE</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.perfma.xlab</groupId>
-	    <artifactId>xpocket-runtime</artifactId>
-	    <version>2.1.1-RELEASE</version>
+            <artifactId>xpocket-runtime</artifactId>
+            <version>2.1.2-alpha</version>
         </dependency>
     </dependencies>
     <build>
@@ -63,18 +63,18 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-compiler-plugin</artifactId>
-		<version>2.3.2</version>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
                 <configuration>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
-	    </plugin>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-		<version>2.4.3</version>
+                <version>2.4.3</version>
                 <configuration>
-      		    <encoding>${project.build.sourceEncoding}</encoding>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
             <plugin>
@@ -107,8 +107,8 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-assembly-plugin</artifactId>
-		<version>3.3.0</version>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <goals>

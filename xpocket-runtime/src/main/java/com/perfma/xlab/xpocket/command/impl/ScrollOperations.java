@@ -11,17 +11,16 @@ import com.perfma.xlab.xpocket.spi.command.callback.SimpleProcessCallback;
 import com.perfma.xlab.xpocket.spi.process.XPocketProcess;
 import com.perfma.xlab.xpocket.utils.TerminalUtil;
 import com.perfma.xlab.xpocket.utils.XPocketConstants;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
  * @author gongyu <yin.tong@perfma.com>
  */
 @CommandInfo(name = "scroll", usage = "scroll list \n scroll compile -name scrollname -ns scrollnamespace [-t type Default:groovy] [-output path] [-F file or script] \n scroll exec [-script -t type Default:groovy] [-F file or script]", index = 200)
@@ -33,14 +32,8 @@ public class ScrollOperations extends AbstractSystemCommand {
     private static final Map<String, Scroll> scrollMap = new HashMap<>();
 
     static {
-        File dir = new File(XPocketConstants.XPOCKET_SCROLL_PATH);
-        File[] files = dir.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith("scl");
-            }
-        });
-
+        File dir = new File(XPocketConstants.getXpocketScrollPath());
+        File[] files = dir.listFiles((dir1, name) -> name.endsWith("scl"));
         if (files != null && files.length > 1) {
             for (File file : files) {
                 try (FileInputStream fis = new FileInputStream(file)) {
@@ -67,7 +60,7 @@ public class ScrollOperations extends AbstractSystemCommand {
                 boolean isScript = false;
                 String scriptName = "groovy";
                 String sourceFileName = null;
-                String targetOutput = XPocketConstants.XPOCKET_SCROLL_PATH;
+                String targetOutput = XPocketConstants.getXpocketScrollPath();
                 String script = null;
 
                 String scrollName = null;
